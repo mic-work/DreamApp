@@ -49,6 +49,16 @@ export class AuthService {
     return localStorage.getItem(TOKEN_KEY);
   }
 
+  /**
+   * Updates the cached user (localStorage + signal) after a successful
+   * profile edit, without touching the token or forcing a re-login.
+   */
+  updateStoredUser(user: User): void {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    this.currentUserSignal.set(user);
+  }
+
+
   private storeSession(response: AuthResponse): void {
     localStorage.setItem(TOKEN_KEY, response.token);
     localStorage.setItem(USER_KEY, JSON.stringify(response.user));

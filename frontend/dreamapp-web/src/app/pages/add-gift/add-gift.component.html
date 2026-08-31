@@ -8,7 +8,7 @@
   <form [formGroup]="form" (ngSubmit)="submit()" class="card">
     <div class="field">
       <label for="name">Nome *</label>
-      <input id="name" type="text" formControlName="name" placeholder="es. AirPods" />
+      <input id="name" type="text" formControlName="name" placeholder="Scrivi il nome del desiderio" />
       @if (form.controls.name.invalid && form.controls.name.touched) {
         <span class="field-error">Il nome è obbligatorio.</span>
       }
@@ -16,7 +16,7 @@
 
     <div class="field">
       <label for="description">Descrizione</label>
-      <input id="description" type="text" formControlName="description" placeholder="es. Colore nero" />
+      <input id="description" type="text" formControlName="description" placeholder="Aggiungi qualche dettaglio (facoltativo)" />
     </div>
 
     <div class="field">

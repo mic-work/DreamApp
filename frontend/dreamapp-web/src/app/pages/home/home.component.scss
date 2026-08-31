@@ -47,3 +47,11 @@
 .add-friend-btn {
   margin-top: 1.25rem;
 }
+
+.count-pill {
+  transition: transform 0.2s ease;
+}
+
+a.card:hover .count-pill {
+  transform: scale(1.08);
+}

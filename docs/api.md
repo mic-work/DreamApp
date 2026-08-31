@@ -56,7 +56,27 @@ Cerca un utente per username (usato da "Aggiungi amico").
 
 - `200 OK` → `{ id, username, wishlistId }` (mai l'email di un altro
   utente).
+- `400 Bad Request` → stai cercando il tuo stesso username: non puoi
+  aggiungere te stesso come amico.
 - `404 Not Found` → nessun utente con questo username.
+
+### `PUT /api/users/me` 🔒
+
+Aggiorna i dati personali (username, email) dell'utente autenticato. Il
+server usa sempre l'id preso dal token JWT: nessun id passato dal client.
+
+Body:
+
+```json
+{
+  "username": "michele",
+  "email": "michele@example.com"
+}
+```
+
+- `200 OK` → `{ id, username, email, createdAt }` aggiornato.
+- `400 Bad Request` → dati non validi.
+- `409 Conflict` → username o email già in uso da un altro utente.
 
 ## Wishlist
 

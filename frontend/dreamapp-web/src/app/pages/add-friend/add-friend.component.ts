@@ -22,6 +22,7 @@ export class AddFriendComponent {
   foundUser: UserPublic | null = null;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  notFoundMessage = 'Utente non trovato.';
 
   constructor(
     private readonly userService: UserService,
@@ -40,6 +41,7 @@ export class AddFriendComponent {
     this.foundUser = null;
     this.errorMessage = null;
     this.successMessage = null;
+    this.notFoundMessage = 'Utente non trovato.';
 
     this.userService
       .findByUsername(trimmed)
@@ -49,7 +51,12 @@ export class AddFriendComponent {
           this.foundUser = user;
           this.searched = true;
         },
-        error: () => {
+        error: (error) => {
+          // A 400 here means "you searched your own username" — show that
+          // specific message instead of a generic "not found".
+          if (error?.status === 400) {
+            this.notFoundMessage = getApiErrorMessage(error, this.notFoundMessage);
+          }
           this.searched = true;
         }
       });

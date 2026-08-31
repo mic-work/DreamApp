@@ -10,4 +10,9 @@
 
 .auth-footer a {
   font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+
+.auth-footer a:hover {
+  opacity: 0.75;
 }

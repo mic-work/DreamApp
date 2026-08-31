@@ -1,14 +1,57 @@
 <div class="page">
   <h1 class="page-title">Il tuo profilo 👤</h1>
 
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
   @if (authService.currentUser(); as user) {
     <div class="card profile-card">
       <div class="avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
-      <h2>{{ user.username }}</h2>
-      <p class="muted">{{ user.email }}</p>
-      <p class="muted small">Utente dal {{ user.createdAt | date: 'dd/MM/yyyy' }}</p>
+
+      @if (!editing) {
+        <h2>{{ user.username }}</h2>
+        <p class="muted">{{ user.email }}</p>
+        <p class="muted small">Utente dal {{ user.createdAt | date: 'dd/MM/yyyy' }}</p>
+
+        <button type="button" class="btn btn-outline btn-block edit-btn" (click)="startEditing()">MODIFICA DATI</button>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
+          <div class="field">
+            <label for="editUsername">Username</label>
+            <input id="editUsername" type="text" formControlName="username" autocomplete="username" />
+            @if (form.controls.username.invalid && form.controls.username.touched) {
+              <span class="field-error">Username non valido (min. 3 caratteri, solo lettere/numeri/punti/underscore).</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="editEmail">Email</label>
+            <input id="editEmail" type="email" formControlName="email" autocomplete="email" />
+            @if (form.controls.email.invalid && form.controls.email.touched) {
+              <span class="field-error">Inserisci un'email valida.</span>
+            }
+          </div>
+
+          <div class="edit-actions">
+            <button type="button" class="btn btn-ghost" (click)="cancelEditing()" [disabled]="saving">ANNULLA</button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving">
+              @if (saving) {
+                <span class="spinner"></span>
+              } @else {
+                SALVA
+              }
+            </button>
+          </div>
+        </form>
+      }
     </div>
   }
 
-  <button type="button" class="btn btn-outline btn-block logout-btn" (click)="logout()">ESCI</button>
+  @if (!editing) {
+    <button type="button" class="btn btn-outline btn-block logout-btn" (click)="logout()">ESCI</button>
+  }
 </div>

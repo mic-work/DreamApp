@@ -7,8 +7,11 @@
   justify-content: space-between;
   padding: 0.85rem 1.1rem;
   padding-top: calc(0.85rem + env(safe-area-inset-top));
-  background: var(--color-surface);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 1px solid var(--color-border);
+  animation: fade-in 0.4s ease both;
 }
 
 .brand {
@@ -16,6 +19,12 @@
   font-size: 1.15rem;
   color: var(--color-text);
   text-decoration: none;
+  transition: transform 0.15s ease;
+  display: inline-block;
+}
+
+.brand:active {
+  transform: scale(0.96);
 }
 
 .app-nav {
@@ -35,6 +44,15 @@
   font-size: 1.1rem;
   text-decoration: none;
   cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-icon-link:hover {
+  background: var(--color-primary-light);
+}
+
+.btn-icon-link:active {
+  transform: scale(0.92);
 }
 
 .app-main {

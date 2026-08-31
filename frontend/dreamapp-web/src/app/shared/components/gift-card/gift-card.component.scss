@@ -5,6 +5,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: transform 0.22s var(--ease-out-soft), box-shadow 0.22s var(--ease-out-soft);
+}
+
+.gift-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px rgba(80, 30, 45, 0.14);
 }
 
 .gift-photo {
@@ -13,6 +19,11 @@
   object-fit: cover;
   display: block;
   background: var(--color-surface-alt);
+  transition: transform 0.4s var(--ease-out-soft);
+}
+
+.gift-card:hover .gift-photo {
+  transform: scale(1.05);
 }
 
 .gift-body {
@@ -44,6 +55,11 @@ h3 {
   font-size: 0.9rem;
   text-decoration: none;
   margin-top: 0.15rem;
+  transition: opacity 0.15s ease;
+}
+
+.gift-link:hover {
+  opacity: 0.75;
 }
 
 .gift-actions {

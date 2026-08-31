@@ -12,6 +12,8 @@
 
 .auth-emoji {
   font-size: 2.75rem;
+  display: inline-block;
+  animation: float 3.2s ease-in-out infinite;
 }
 
 .auth-hero h1 {
@@ -32,4 +34,9 @@
 
 .auth-footer a {
   font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+
+.auth-footer a:hover {
+  opacity: 0.75;
 }

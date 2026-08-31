@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using DreamApp.Api.Common;
 using DreamApp.Api.Models;
 
 namespace DreamApp.Api.DTOs.Gifts;
@@ -19,7 +20,7 @@ public class GiftCreateDto
     public string? ImageUrl { get; set; }
 
     [MaxLength(2048)]
-    [Url(ErrorMessage = "Il link al prodotto non è un URL valido.")]
+    [OptionalUrl(ErrorMessage = "Il link al prodotto non è un URL valido.")]
     public string? ProductUrl { get; set; }
 
     public GiftPriority Priority { get; set; } = GiftPriority.Medium;

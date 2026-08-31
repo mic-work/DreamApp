@@ -8,7 +8,7 @@
   <form class="card search-form" (ngSubmit)="search()">
     <div class="field">
       <label for="friendUsername">Username</label>
-      <input id="friendUsername" type="text" name="friendUsername" [(ngModel)]="username" placeholder="es. tatina" />
+      <input id="friendUsername" type="text" name="friendUsername" [(ngModel)]="username" placeholder="Inserisci uno username" />
     </div>
 
     <button type="submit" class="btn btn-primary btn-block" [disabled]="searching">
@@ -35,7 +35,7 @@
         </button>
       </div>
     } @else {
-      <p class="empty-state">Utente non trovato.</p>
+      <p class="empty-state">{{ notFoundMessage }}</p>
     }
   }
 </div>
