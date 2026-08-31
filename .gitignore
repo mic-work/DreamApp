@@ -1,0 +1,39 @@
+# ==========================================================================
+# DreamApp — root .gitignore
+# ==========================================================================
+
+# ---- SQLite database + uploaded gift photos: NEVER commit real data ----
+# NOTE: the folder is "App_Data" (not "data") on purpose — Windows'
+# filesystem is case-insensitive, so "data/" would also match the "Data/"
+# source folder in backend/DreamApp.Api and silently hide those .cs files
+# from Git. Keep this name if you ever change it in Program.cs.
+*.db
+*.db-shm
+*.db-wal
+/backend/DreamApp.Api/App_Data/
+/database/*.db
+
+# ---- .NET / backend ----
+**/bin/
+**/obj/
+*.user
+*.suo
+backend/**/appsettings.*.local.json
+
+# ---- Node / Angular frontend ----
+frontend/dreamapp-web/node_modules/
+frontend/dreamapp-web/dist/
+frontend/dreamapp-web/.angular/
+frontend/dreamapp-web/coverage/
+npm-debug.log*
+
+# ---- IDEs / editors ----
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# ---- OS ----
+.DS_Store
+Thumbs.db

@@ -1,0 +1,39 @@
+<div class="page auth-page">
+  <div class="auth-hero">
+    <span class="auth-emoji">🎁</span>
+    <h1>DreamApp</h1>
+    <p class="auth-subtitle">Le vostre liste dei desideri, sempre a portata di mano ✨</p>
+  </div>
+
+  @if (sessionExpired) {
+    <div class="alert alert-error">La sessione è scaduta. Effettua di nuovo l'accesso.</div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card">
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" type="text" formControlName="username" autocomplete="username" placeholder="Il tuo username" />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" autocomplete="current-password" placeholder="La tua password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
+      @if (loading) {
+        <span class="spinner"></span>
+      } @else {
+        ACCEDI
+      }
+    </button>
+  </form>
+
+  <p class="auth-footer">
+    Non hai un account?
+    <a routerLink="/register">REGISTRATI</a>
+  </p>
+</div>

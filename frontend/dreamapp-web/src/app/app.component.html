@@ -1,0 +1,13 @@
+@if (authService.isAuthenticated()) {
+  <header class="app-header">
+    <a class="brand" routerLink="/home">🎁 DreamApp</a>
+    <nav class="app-nav">
+      <a routerLink="/profile" class="btn-icon-link" aria-label="Profilo">👤</a>
+      <button type="button" class="btn-icon-link" (click)="logout()" aria-label="Esci">🚪</button>
+    </nav>
+  </header>
+}
+
+<main class="app-main">
+  <router-outlet />
+</main>

@@ -1,0 +1,25 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priority-high {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.priority-medium {
+  background: var(--color-gray-light);
+  color: var(--color-text);
+}
+
+.priority-low {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}

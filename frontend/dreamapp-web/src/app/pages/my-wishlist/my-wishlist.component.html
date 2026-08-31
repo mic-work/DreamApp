@@ -1,0 +1,29 @@
+<div class="page">
+  <h1 class="page-title">🎁 I miei desideri</h1>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+  } @else if (gifts.length === 0) {
+    <p class="empty-state">Non hai ancora aggiunto nessun desiderio. Inizia subito! ✨</p>
+  } @else {
+    <div class="card-list">
+      @for (gift of gifts; track gift.id) {
+        <app-gift-card [gift]="gift" (edit)="editGift($event)" (remove)="askDelete($event)" />
+      }
+    </div>
+  }
+
+  <a routerLink="/gifts/new" class="btn btn-primary btn-block add-gift-btn">+ AGGIUNGI REGALO</a>
+</div>
+
+<app-confirm-dialog
+  [open]="!!giftPendingDeletion"
+  title="Sei sicuro di voler eliminare questo desiderio?"
+  [message]="giftPendingDeletion?.name ?? ''"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+/>

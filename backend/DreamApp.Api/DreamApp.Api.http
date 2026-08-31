@@ -1,0 +1,45 @@
+@DreamApp.Api_HostAddress = http://localhost:5000
+
+### Register a new user
+POST {{DreamApp.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "michele",
+  "email": "michele@example.com",
+  "password": "password123",
+  "confirmPassword": "password123"
+}
+
+### Login
+# @name login
+POST {{DreamApp.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "michele",
+  "password": "password123"
+}
+
+### Get my profile (uses the token returned by the login request above)
+GET {{DreamApp.Api_HostAddress}}/api/auth/me
+Authorization: Bearer {{login.response.body.token}}
+
+### Get my wishlist
+GET {{DreamApp.Api_HostAddress}}/api/wishlists/me
+Authorization: Bearer {{login.response.body.token}}
+
+### Add a gift to my wishlist
+POST {{DreamApp.Api_HostAddress}}/api/gifts
+Authorization: Bearer {{login.response.body.token}}
+Content-Type: application/json
+
+{
+  "name": "AirPods",
+  "description": "Colore nero",
+  "priority": "High"
+}
+
+### Search a friend by username
+GET {{DreamApp.Api_HostAddress}}/api/users/tatina
+Authorization: Bearer {{login.response.body.token}}

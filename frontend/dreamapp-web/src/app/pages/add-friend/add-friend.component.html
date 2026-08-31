@@ -1,0 +1,41 @@
+<div class="page">
+  <h1 class="page-title">Aggiungi lista di un amico ❤️</h1>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  <form class="card search-form" (ngSubmit)="search()">
+    <div class="field">
+      <label for="friendUsername">Username</label>
+      <input id="friendUsername" type="text" name="friendUsername" [(ngModel)]="username" placeholder="es. tatina" />
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="searching">
+      @if (searching) {
+        <span class="spinner"></span>
+      } @else {
+        CERCA
+      }
+    </button>
+  </form>
+
+  @if (searched) {
+    @if (foundUser) {
+      <div class="card result-card">
+        <p class="found-label">✓ Utente trovato</p>
+        <h2>{{ foundUser.username }}</h2>
+        <p class="muted">&#64;{{ foundUser.username }}</p>
+        <button type="button" class="btn btn-primary btn-block" (click)="addList()" [disabled]="adding">
+          @if (adding) {
+            <span class="spinner"></span>
+          } @else {
+            AGGIUNGI LISTA
+          }
+        </button>
+      </div>
+    } @else {
+      <p class="empty-state">Utente non trovato.</p>
+    }
+  }
+</div>

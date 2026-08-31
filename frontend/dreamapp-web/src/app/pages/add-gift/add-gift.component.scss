@@ -1,0 +1,13 @@
+.photo-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.6rem;
+}
+
+.photo-upload-btn {
+  display: inline-flex;
+  width: fit-content;
+  cursor: pointer;
+}

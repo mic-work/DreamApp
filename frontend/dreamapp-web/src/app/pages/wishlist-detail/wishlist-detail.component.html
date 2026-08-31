@@ -1,0 +1,35 @@
+<div class="page">
+  @if (loading) {
+    <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+  } @else if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+    <a routerLink="/home" class="btn btn-outline btn-block">TORNA ALLA HOME</a>
+  } @else if (wishlist) {
+    <h1 class="page-title">❤️ Lista Desideri {{ wishlist.ownerUsername }}</h1>
+
+    @if (wishlist.gifts.length === 0) {
+      <p class="empty-state">{{ wishlist.ownerUsername }} non ha ancora aggiunto desideri.</p>
+    } @else {
+      <div class="card-list">
+        @for (gift of wishlist.gifts; track gift.id) {
+          <app-gift-card [gift]="gift" [readonly]="true" />
+        }
+      </div>
+    }
+
+    @if (!wishlist.isOwner) {
+      <button type="button" class="btn btn-ghost btn-block remove-friend-btn" (click)="confirmingRemoval = true">
+        Rimuovi questa lista dai miei amici
+      </button>
+    }
+  }
+</div>
+
+<app-confirm-dialog
+  [open]="confirmingRemoval"
+  title="Rimuovere questa lista?"
+  [message]="'Non vedrai più la lista di ' + (wishlist?.ownerUsername ?? '') + ' tra i tuoi amici.'"
+  confirmLabel="RIMUOVI"
+  (confirmed)="removeFriend()"
+  (cancelled)="confirmingRemoval = false"
+/>

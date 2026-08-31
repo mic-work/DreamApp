@@ -1,0 +1,30 @@
+<article class="gift-card">
+  @if (imageUrl) {
+    <img class="gift-photo" [src]="imageUrl" [alt]="gift.name" />
+  }
+
+  <div class="gift-body">
+    <h3>{{ gift.name }}</h3>
+
+    @if (gift.description) {
+      <p class="gift-description">{{ gift.description }}</p>
+    }
+
+    @if (gift.notes) {
+      <p class="gift-notes">📝 {{ gift.notes }}</p>
+    }
+
+    <app-priority-badge [priority]="gift.priority" />
+
+    @if (gift.productUrl) {
+      <a class="gift-link" [href]="gift.productUrl" target="_blank" rel="noopener">🔗 Vedi prodotto</a>
+    }
+
+    @if (!readonly) {
+      <div class="gift-actions">
+        <button type="button" class="btn btn-outline" (click)="edit.emit(gift)">MODIFICA</button>
+        <button type="button" class="btn btn-ghost btn-danger-text" (click)="remove.emit(gift)">ELIMINA</button>
+      </div>
+    }
+  </div>
+</article>

@@ -1,0 +1,73 @@
+<div class="page">
+  <h1 class="page-title">{{ isEditMode ? 'Modifica desiderio 🎁' : 'Nuovo desiderio 🎁' }}</h1>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card">
+    <div class="field">
+      <label for="name">Nome *</label>
+      <input id="name" type="text" formControlName="name" placeholder="es. AirPods" />
+      @if (form.controls.name.invalid && form.controls.name.touched) {
+        <span class="field-error">Il nome è obbligatorio.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="description">Descrizione</label>
+      <input id="description" type="text" formControlName="description" placeholder="es. Colore nero" />
+    </div>
+
+    <div class="field">
+      <label for="notes">Note</label>
+      <textarea id="notes" rows="3" formControlName="notes" placeholder="Dettagli utili per chi ti farà il regalo"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Foto</label>
+      @if (previewUrl) {
+        <img [src]="previewUrl" alt="Anteprima foto" class="photo-preview" />
+      }
+      <label class="btn btn-outline photo-upload-btn">
+        @if (uploadingPhoto) {
+          <span class="spinner spinner-dark"></span>
+        } @else {
+          Aggiungi foto
+        }
+        <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onPhotoSelected($event)" hidden />
+      </label>
+    </div>
+
+    <div class="field">
+      <label for="productUrl">Link prodotto</label>
+      <input id="productUrl" type="url" formControlName="productUrl" placeholder="https://..." />
+    </div>
+
+    <div class="field">
+      <label>Priorità</label>
+      <div class="radio-group">
+        <label class="radio-pill" [class.selected]="form.controls.priority.value === 'Low'">
+          <input type="radio" name="priority" (click)="selectPriority('Low')" />
+          Bassa
+        </label>
+        <label class="radio-pill" [class.selected]="form.controls.priority.value === 'Medium'">
+          <input type="radio" name="priority" (click)="selectPriority('Medium')" />
+          Media
+        </label>
+        <label class="radio-pill" [class.selected]="form.controls.priority.value === 'High'">
+          <input type="radio" name="priority" (click)="selectPriority('High')" />
+          Alta
+        </label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="loading || uploadingPhoto">
+      @if (loading) {
+        <span class="spinner"></span>
+      } @else {
+        SALVA
+      }
+    </button>
+  </form>
+</div>

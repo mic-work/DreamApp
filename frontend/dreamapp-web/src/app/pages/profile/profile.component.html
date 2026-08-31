@@ -1,0 +1,14 @@
+<div class="page">
+  <h1 class="page-title">Il tuo profilo 👤</h1>
+
+  @if (authService.currentUser(); as user) {
+    <div class="card profile-card">
+      <div class="avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+      <h2>{{ user.username }}</h2>
+      <p class="muted">{{ user.email }}</p>
+      <p class="muted small">Utente dal {{ user.createdAt | date: 'dd/MM/yyyy' }}</p>
+    </div>
+  }
+
+  <button type="button" class="btn btn-outline btn-block logout-btn" (click)="logout()">ESCI</button>
+</div>

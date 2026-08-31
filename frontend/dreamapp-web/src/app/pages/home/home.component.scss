@@ -1,0 +1,49 @@
+.my-wishes-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 1.75rem;
+}
+
+.my-wishes-card h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.1rem;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.count-pill {
+  min-width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.friends-section h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.9rem;
+}
+
+.friend-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.add-friend-btn {
+  margin-top: 1.25rem;
+}
