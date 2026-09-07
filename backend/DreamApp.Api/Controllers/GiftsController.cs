@@ -30,6 +30,7 @@ public class GiftsController : ControllerBase
         var userId = User.GetUserId();
 
         int targetWishlistId;
+        bool isOwner;
         if (wishlistId.HasValue)
         {
             targetWishlistId = wishlistId.Value;
@@ -43,6 +44,8 @@ public class GiftsController : ControllerBase
             {
                 return Forbid();
             }
+
+            isOwner = wishlist.OwnerId == userId;
         }
         else
         {
@@ -53,6 +56,7 @@ public class GiftsController : ControllerBase
             }
 
             targetWishlistId = myWishlist.Id;
+            isOwner = true;
         }
 
         // Materialize the entities first, then map to DTOs in memory: keeps
@@ -63,7 +67,7 @@ public class GiftsController : ControllerBase
             .OrderByDescending(g => g.Priority)
             .ThenByDescending(g => g.CreatedAt)
             .ToList()
-            .Select(ToDto)
+            .Select(g => ToDto(g, isOwner))
             .ToList();
 
         return Ok(gifts);
@@ -85,7 +89,7 @@ public class GiftsController : ControllerBase
             return Forbid();
         }
 
-        return Ok(ToDto(gift));
+        return Ok(ToDto(gift, wishlist.OwnerId == userId));
     }
 
     /// <summary>Creates a gift in the caller's own wishlist. A user can never create a gift for someone else.</summary>
@@ -114,7 +118,7 @@ public class GiftsController : ControllerBase
         _db.Add(gift);
         await _db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = gift.Id }, ToDto(gift));
+        return CreatedAtAction(nameof(GetById), new { id = gift.Id }, ToDto(gift, isOwner: true));
     }
 
     /// <summary>
@@ -149,7 +153,7 @@ public class GiftsController : ControllerBase
 
         await _db.SaveChangesAsync();
 
-        return Ok(ToDto(gift));
+        return Ok(ToDto(gift, isOwner: true));
     }
 
     [HttpDelete("{id:int}")]
@@ -178,7 +182,7 @@ public class GiftsController : ControllerBase
         wishlist.OwnerId == userId ||
         _db.WishlistAccesses.Any(a => a.WishlistId == wishlist.Id && a.UserId == userId);
 
-    private static GiftDto ToDto(Gift gift) => new()
+    private static GiftDto ToDto(Gift gift, bool isOwner) => new()
     {
         Id = gift.Id,
         WishlistId = gift.WishlistId,
@@ -189,6 +193,7 @@ public class GiftsController : ControllerBase
         ProductUrl = gift.ProductUrl,
         Priority = gift.Priority,
         CreatedAt = gift.CreatedAt,
-        UpdatedAt = gift.UpdatedAt
+        UpdatedAt = gift.UpdatedAt,
+        IsOwner = isOwner
     };
 }

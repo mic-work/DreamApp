@@ -1,14 +1,10 @@
 /* DreamApp global styles — mobile-first, palette: bianco / rosa tenue / rosa-rosso / grigio chiaro. */
 
 :root {
-  --color-bg: #fff7f8;
-  --color-bg-gradient:
-    radial-gradient(circle at 15% -10%, #ffe0e8 0%, transparent 48%),
-    radial-gradient(circle at 100% 0%, #fff1e6 0%, transparent 42%),
-    radial-gradient(circle at 50% 100%, #fdeaf0 0%, transparent 55%),
-    var(--color-bg);
+  --color-bg: #faf6f7;
+  --color-bg-gradient: radial-gradient(circle at 50% -20%, #ffe3ea 0%, transparent 45%), var(--color-bg);
   --color-surface: #ffffff;
-  --color-surface-alt: #f4eef0;
+  --color-surface-alt: #f5eff1;
   --color-gray-light: #efeaec;
 
   --color-primary: #e2607d;
@@ -16,17 +12,18 @@
   --color-primary-light: #fbe1e8;
   --color-primary-gradient: linear-gradient(135deg, #ea7a93, #cf4d6a);
 
-  --color-text: #2c2427;
-  --color-text-muted: #857779;
-  --color-border: #f1dfe4;
+  --color-text: #211b1e;
+  --color-text-muted: #837579;
+  --color-border: #ede0e3;
 
-  --shadow-soft: 0 4px 16px rgba(80, 30, 45, 0.08);
-  --shadow-lift: 0 14px 30px rgba(80, 30, 45, 0.16);
-  --radius-lg: 22px;
-  --radius-md: 16px;
+  --shadow-soft: 0 2px 10px rgba(60, 20, 32, 0.06);
+  --shadow-lift: 0 12px 26px rgba(60, 20, 32, 0.14);
+  --radius-lg: 20px;
+  --radius-md: 14px;
   --radius-sm: 10px;
 
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --bottom-nav-height: 64px;
 
   color-scheme: light;
 }
@@ -47,9 +44,9 @@ body {
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
   /* Respect the iPhone notch / home indicator when installed as a PWA. */
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 h1,
@@ -57,6 +54,7 @@ h2,
 h3 {
   color: var(--color-text);
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 a {
@@ -66,13 +64,14 @@ a {
 .page {
   max-width: 480px;
   margin: 0 auto;
-  padding: 1.25rem 1.1rem 2.5rem;
+  padding: 1.25rem 1.1rem 2rem;
   min-height: 100%;
-  animation: fade-in-up 0.45s var(--ease-out-soft) both;
+  animation: fade-in-up 0.4s var(--ease-out-soft) both;
 }
 
 .page-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  font-weight: 800;
   margin: 0 0 1.25rem;
 }
 
@@ -86,11 +85,11 @@ a {
   padding: 0.75rem 1.25rem;
   border-radius: 999px;
   border: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.12s ease, opacity 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
 }
 
 .btn:active {
@@ -132,6 +131,10 @@ a {
   color: var(--color-text-muted);
 }
 
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+}
+
 .btn-danger {
   background: #c0405a;
   color: #fff;
@@ -156,7 +159,7 @@ a {
 
 .field label {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--color-text);
 }
 
@@ -222,10 +225,11 @@ a {
 /* ---------- Cards / layout helpers ---------- */
 .card {
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   padding: 1.25rem;
-  animation: pop-in 0.35s var(--ease-out-soft) both;
+  animation: pop-in 0.32s var(--ease-out-soft) both;
 }
 
 /* Clickable cards (anchors) get a gentle lift on hover/press — a plain form
@@ -233,13 +237,14 @@ a {
    the user can actually tap. */
 a.card {
   text-decoration: none;
-  transition: transform 0.2s var(--ease-out-soft), box-shadow 0.2s var(--ease-out-soft);
+  transition: transform 0.2s var(--ease-out-soft), box-shadow 0.2s var(--ease-out-soft), border-color 0.2s ease;
 }
 
 a.card:hover,
 a.card:focus-visible {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lift);
+  border-color: var(--color-primary-light);
 }
 
 a.card:active {
@@ -249,19 +254,19 @@ a.card:active {
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .card-list > * {
-  animation: fade-in-up 0.4s var(--ease-out-soft) both;
+  animation: fade-in-up 0.38s var(--ease-out-soft) both;
 }
 
 .card-list > *:nth-child(1) { animation-delay: 0.02s; }
-.card-list > *:nth-child(2) { animation-delay: 0.07s; }
-.card-list > *:nth-child(3) { animation-delay: 0.12s; }
-.card-list > *:nth-child(4) { animation-delay: 0.17s; }
-.card-list > *:nth-child(5) { animation-delay: 0.22s; }
-.card-list > *:nth-child(n + 6) { animation-delay: 0.26s; }
+.card-list > *:nth-child(2) { animation-delay: 0.06s; }
+.card-list > *:nth-child(3) { animation-delay: 0.1s; }
+.card-list > *:nth-child(4) { animation-delay: 0.14s; }
+.card-list > *:nth-child(5) { animation-delay: 0.18s; }
+.card-list > *:nth-child(n + 6) { animation-delay: 0.22s; }
 
 .empty-state {
   text-align: center;

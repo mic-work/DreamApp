@@ -6,6 +6,18 @@
   text-align: center;
 }
 
+.found-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e9f7ee;
+  color: #2f7a4a;
+  margin-bottom: 0.6rem;
+}
+
 .found-label {
   color: #2f7a4a;
   font-weight: 700;

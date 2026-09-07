@@ -1,33 +1,57 @@
 .my-wishes-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.9rem;
   text-decoration: none;
   color: inherit;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
-.my-wishes-card h2 {
-  margin: 0 0 0.2rem;
-  font-size: 1.1rem;
+.icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.my-wishes-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.my-wishes-info h2 {
+  margin: 0 0 0.15rem;
+  font-size: 1.05rem;
 }
 
 .muted {
   margin: 0;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .count-pill {
-  min-width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
+  min-width: 2.1rem;
+  height: 2.1rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+a.card:hover .count-pill {
+  transform: scale(1.08);
 }
 
 .friends-section h2 {
@@ -38,20 +62,106 @@
 .friend-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.friend-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   text-decoration: none;
   color: inherit;
+}
+
+.friend-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.friend-name {
+  flex: 1;
+  min-width: 0;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.friend-menu {
+  position: relative;
+}
+
+.menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.menu-trigger:hover {
+  background: var(--color-surface-alt);
+}
+
+.menu-trigger:active {
+  transform: scale(0.92);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lift);
+  padding: 0.35rem;
+  min-width: 172px;
+  animation: pop-in 0.15s var(--ease-out-soft) both;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+}
+
+.menu-item:hover {
+  background: var(--color-surface-alt);
+}
+
+.menu-item.danger {
+  color: #c0405a;
 }
 
 .add-friend-btn {
   margin-top: 1.25rem;
-}
-
-.count-pill {
-  transition: transform 0.2s ease;
-}
-
-a.card:hover .count-pill {
-  transform: scale(1.08);
 }

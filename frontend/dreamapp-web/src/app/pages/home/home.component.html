@@ -1,16 +1,17 @@
 <div class="page">
-  <h1 class="page-title">Ciao, {{ authService.currentUser()?.username }} ❤️</h1>
+  <h1 class="page-title">Ciao, {{ authService.currentUser()?.username }} 👋</h1>
 
   <a routerLink="/wishlist/me" class="card my-wishes-card">
-    <div>
-      <h2>🎁 I miei desideri</h2>
+    <span class="icon-badge"><app-icon name="gift" [size]="22" /></span>
+    <div class="my-wishes-info">
+      <h2>I miei desideri</h2>
       <p class="muted">Gestisci la tua lista</p>
     </div>
     <span class="count-pill">{{ myGiftsCount }}</span>
   </a>
 
   <section class="friends-section">
-    <h2>❤️ Liste dei miei amici</h2>
+    <h2>Liste dei miei amici</h2>
 
     @if (loading) {
       <div class="empty-state"><span class="spinner spinner-dark"></span></div>
@@ -19,14 +20,49 @@
     } @else {
       <div class="card-list">
         @for (wishlist of friendsWishlists; track wishlist.id) {
-          <a class="card friend-card" [routerLink]="['/wishlist', wishlist.ownerUsername]">
-            <span>Lista Desideri {{ wishlist.ownerUsername }}</span>
-            <span class="count-pill">{{ wishlist.giftsCount }}</span>
-          </a>
+          <div class="card friend-card">
+            <a class="friend-link" [routerLink]="['/wishlist', wishlist.ownerUsername]">
+              <span class="friend-avatar">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
+              <span class="friend-name">{{ wishlist.ownerUsername }}</span>
+              <span class="count-pill">{{ wishlist.giftsCount }}</span>
+            </a>
+
+            <div class="friend-menu">
+              <button
+                type="button"
+                class="menu-trigger"
+                (click)="toggleMenu(wishlist.id, $event)"
+                aria-label="Altre azioni"
+              >
+                <app-icon name="dots-vertical" [size]="20" />
+              </button>
+
+              @if (openMenuId === wishlist.id) {
+                <div class="menu-dropdown">
+                  <button type="button" class="menu-item danger" (click)="askRemoveFriend(wishlist, $event)">
+                    <app-icon name="trash" [size]="16" />
+                    Rimuovi amico
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
         }
       </div>
     }
 
-    <a routerLink="/add-friend" class="btn btn-outline btn-block add-friend-btn">+ AGGIUNGI AMICO</a>
+    <a routerLink="/add-friend" class="btn btn-outline btn-block add-friend-btn">
+      <app-icon name="plus" [size]="18" />
+      AGGIUNGI AMICO
+    </a>
   </section>
 </div>
+
+<app-confirm-dialog
+  [open]="!!friendPendingRemoval"
+  title="Rimuovere questo amico?"
+  [message]="'Non vedrai più la lista di ' + (friendPendingRemoval?.ownerUsername ?? '') + ' tra i tuoi amici.'"
+  confirmLabel="RIMUOVI"
+  (confirmed)="confirmRemoveFriend()"
+  (cancelled)="cancelRemoveFriend()"
+/>

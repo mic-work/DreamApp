@@ -1,4 +1,8 @@
 <span class="badge" [class]="'priority-' + priority.toLowerCase()">
-  <span aria-hidden="true">{{ stars }}</span>
+  <span class="stars" aria-hidden="true">
+    @for (star of stars; track $index) {
+      <app-icon name="star-filled" [size]="12" />
+    }
+  </span>
   <span>{{ label }}</span>
 </span>

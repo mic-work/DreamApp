@@ -11,6 +11,7 @@ export interface Gift {
   priority: GiftPriority;
   createdAt: string;
   updatedAt: string;
+  isOwner: boolean;
 }
 
 export interface GiftCreateRequest {

@@ -5,11 +5,12 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { getApiErrorMessage } from '../../shared/api-error.util';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, IconComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })

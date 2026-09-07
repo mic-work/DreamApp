@@ -1,0 +1,66 @@
+<div class="page">
+  <app-page-header [title]="gift?.name ?? 'Desiderio'" />
+
+  @if (loading) {
+    <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+  } @else if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  } @else if (gift) {
+    <div class="card detail-card">
+      <div class="detail-section detail-top">
+        <app-priority-badge [priority]="gift.priority" />
+      </div>
+
+      @if (gift.description) {
+        <div class="detail-section">
+          <span class="detail-label">Descrizione</span>
+          <p class="detail-text">{{ gift.description }}</p>
+        </div>
+      }
+
+      @if (gift.notes) {
+        <div class="detail-section">
+          <span class="detail-label">Note</span>
+          <p class="detail-text"><app-icon name="note" [size]="15" /> {{ gift.notes }}</p>
+        </div>
+      }
+
+      @if (gift.productUrl) {
+        <div class="detail-section">
+          <a class="gift-link" [href]="gift.productUrl" target="_blank" rel="noopener">
+            <app-icon name="link" [size]="15" />
+            Vedi prodotto
+          </a>
+        </div>
+      }
+
+      @if (imageUrl) {
+        <div class="detail-section detail-photo-section">
+          <img [src]="imageUrl" [alt]="gift.name" class="detail-photo" />
+        </div>
+      }
+    </div>
+
+    @if (gift.isOwner) {
+      <div class="detail-actions">
+        <button type="button" class="btn btn-outline btn-block" (click)="edit()">
+          <app-icon name="pencil" [size]="16" />
+          MODIFICA
+        </button>
+        <button type="button" class="btn btn-ghost btn-block btn-danger-text" (click)="askDelete()">
+          <app-icon name="trash" [size]="16" />
+          ELIMINA
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<app-confirm-dialog
+  [open]="confirmingDeletion"
+  title="Sei sicuro di voler eliminare questo desiderio?"
+  [message]="gift?.name ?? ''"
+  confirmLabel="ELIMINA"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+/>

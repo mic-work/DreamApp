@@ -1,5 +1,5 @@
 <div class="page">
-  <h1 class="page-title">{{ isEditMode ? 'Modifica desiderio 🎁' : 'Nuovo desiderio 🎁' }}</h1>
+  <app-page-header [title]="isEditMode ? 'Modifica desiderio' : 'Nuovo desiderio'" backTo="/wishlist/me" />
 
   @if (errorMessage) {
     <div class="alert alert-error">{{ errorMessage }}</div>
@@ -33,6 +33,7 @@
         @if (uploadingPhoto) {
           <span class="spinner spinner-dark"></span>
         } @else {
+          <app-icon name="camera" [size]="18" />
           Aggiungi foto
         }
         <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onPhotoSelected($event)" hidden />

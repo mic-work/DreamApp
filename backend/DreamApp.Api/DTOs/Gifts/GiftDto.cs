@@ -14,4 +14,7 @@ public class GiftDto
     public GiftPriority Priority { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+
+    /// <summary>True when the caller owns this gift (i.e. it's in their own wishlist).</summary>
+    public bool IsOwner { get; set; }
 }

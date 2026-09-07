@@ -1,5 +1,5 @@
 <div class="page">
-  <h1 class="page-title">Il tuo profilo 👤</h1>
+  <h1 class="page-title">Il tuo profilo</h1>
 
   @if (successMessage) {
     <div class="alert alert-success">{{ successMessage }}</div>
@@ -17,7 +17,10 @@
         <p class="muted">{{ user.email }}</p>
         <p class="muted small">Utente dal {{ user.createdAt | date: 'dd/MM/yyyy' }}</p>
 
-        <button type="button" class="btn btn-outline btn-block edit-btn" (click)="startEditing()">MODIFICA DATI</button>
+        <button type="button" class="btn btn-outline btn-block edit-btn" (click)="startEditing()">
+          <app-icon name="pencil" [size]="17" />
+          MODIFICA DATI
+        </button>
       } @else {
         <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
           <div class="field">
@@ -52,6 +55,9 @@
   }
 
   @if (!editing) {
-    <button type="button" class="btn btn-outline btn-block logout-btn" (click)="logout()">ESCI</button>
+    <button type="button" class="btn btn-outline btn-block logout-btn" (click)="logout()">
+      <app-icon name="logout" [size]="17" />
+      ESCI
+    </button>
   }
 </div>

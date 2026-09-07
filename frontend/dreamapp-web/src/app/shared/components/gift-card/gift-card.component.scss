@@ -1,79 +1,33 @@
-.gift-card {
-  background: var(--color-surface);
-  border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+.gift-row {
   display: flex;
-  flex-direction: column;
-  transition: transform 0.22s var(--ease-out-soft), box-shadow 0.22s var(--ease-out-soft);
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
 }
 
-.gift-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 26px rgba(80, 30, 45, 0.14);
-}
-
-.gift-photo {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  display: block;
-  background: var(--color-surface-alt);
-  transition: transform 0.4s var(--ease-out-soft);
-}
-
-.gift-card:hover .gift-photo {
-  transform: scale(1.05);
-}
-
-.gift-body {
-  padding: 1rem 1.1rem 1.1rem;
+.gift-row-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-h3 {
+.gift-row-info h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.gift-description {
-  margin: 0;
+.chevron {
   color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s var(--ease-out-soft);
 }
 
-.gift-notes {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-}
-
-.gift-link {
+a.card:hover .chevron {
+  transform: translateX(3px);
   color: var(--color-primary-dark);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  margin-top: 0.15rem;
-  transition: opacity 0.15s ease;
-}
-
-.gift-link:hover {
-  opacity: 0.75;
-}
-
-.gift-actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 0.5rem;
-}
-
-.gift-actions .btn {
-  flex: 1;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.85rem;
-}
-
-.btn-danger-text {
-  color: #c0405a;
 }

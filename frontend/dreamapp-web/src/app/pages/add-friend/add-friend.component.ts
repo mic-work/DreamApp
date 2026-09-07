@@ -6,11 +6,13 @@ import { UserService } from '../../core/services/user.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 import { UserPublic } from '../../models/user.model';
 import { getApiErrorMessage } from '../../shared/api-error.util';
+import { IconComponent } from '../../shared/components/icon/icon.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-add-friend',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, IconComponent, PageHeaderComponent],
   templateUrl: './add-friend.component.html',
   styleUrl: './add-friend.component.scss'
 })

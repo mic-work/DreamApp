@@ -1,24 +1,30 @@
 import { Component, Input } from '@angular/core';
 import { GiftPriority } from '../../../models/gift.model';
+import { IconComponent } from '../icon/icon.component';
 
 @Component({
   selector: 'app-priority-badge',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './priority-badge.component.html',
   styleUrl: './priority-badge.component.scss'
 })
 export class PriorityBadgeComponent {
   @Input({ required: true }) priority!: GiftPriority;
 
-  get stars(): string {
+  get starCount(): number {
     switch (this.priority) {
       case 'High':
-        return '⭐⭐⭐';
+        return 3;
       case 'Medium':
-        return '⭐⭐';
+        return 2;
       default:
-        return '⭐';
+        return 1;
     }
+  }
+
+  get stars(): number[] {
+    return Array.from({ length: this.starCount });
   }
 
   get label(): string {

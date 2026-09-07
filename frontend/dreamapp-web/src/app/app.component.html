@@ -1,13 +1,20 @@
-@if (authService.isAuthenticated()) {
-  <header class="app-header">
-    <a class="brand" routerLink="/home">🎁 DreamApp</a>
-    <nav class="app-nav">
-      <a routerLink="/profile" class="btn-icon-link" aria-label="Profilo">👤</a>
-      <button type="button" class="btn-icon-link" (click)="logout()" aria-label="Esci">🚪</button>
-    </nav>
-  </header>
-}
-
-<main class="app-main">
+<main class="app-main" [class.with-nav]="authService.isAuthenticated()">
   <router-outlet />
 </main>
+
+@if (authService.isAuthenticated()) {
+  <nav class="bottom-nav" aria-label="Navigazione principale">
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <app-icon name="home" [size]="23" />
+      <span>Home</span>
+    </a>
+    <a routerLink="/wishlist/me" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <app-icon name="gift" [size]="23" />
+      <span>Desideri</span>
+    </a>
+    <a routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <app-icon name="user" [size]="23" />
+      <span>Profilo</span>
+    </a>
+  </nav>
+}

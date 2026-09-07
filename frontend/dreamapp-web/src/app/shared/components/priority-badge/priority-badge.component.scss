@@ -23,3 +23,8 @@
   background: var(--color-surface-alt);
   color: var(--color-text-muted);
 }
+
+.stars {
+  display: inline-flex;
+  gap: 1px;
+}

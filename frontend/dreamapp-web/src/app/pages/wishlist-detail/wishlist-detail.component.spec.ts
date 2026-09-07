@@ -25,7 +25,8 @@ const FRIEND_WISHLIST: WishlistDetail = {
       productUrl: null,
       priority: 'High',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      isOwner: false
     }
   ]
 };
@@ -70,8 +71,8 @@ describe('WishlistDetailComponent (friend, read-only)', () => {
     expect(compiled.textContent).not.toContain('ELIMINA');
   });
 
-  it('offers a "remove friend" action since this is not the caller\'s own wishlist', () => {
+  it('shows a back button to return to Home (removing a friend now lives there, in the 3-dot menu)', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.remove-friend-btn')).not.toBeNull();
+    expect(compiled.querySelector('.back-btn')).not.toBeNull();
   });
 });

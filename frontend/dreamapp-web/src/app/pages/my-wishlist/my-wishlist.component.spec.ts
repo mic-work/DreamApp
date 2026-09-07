@@ -24,7 +24,8 @@ const SAMPLE_WISHLIST: WishlistDetail = {
       productUrl: null,
       priority: 'High',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      isOwner: true
     }
   ]
 };
@@ -49,19 +50,16 @@ describe('MyWishlistComponent', () => {
 
   afterEach(() => httpMock.verify());
 
-  it('renders the gifts returned by the API, with edit/delete actions', () => {
+  it('renders the gift names returned by the API as a compact list (no photo at a glance)', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('AirPods');
     expect(compiled.querySelector('app-gift-card')).not.toBeNull();
+    expect(compiled.querySelector('img')).toBeNull();
   });
 
-  it('asks for confirmation before deleting a gift', () => {
-    const component = fixture.componentInstance;
-    component.askDelete(SAMPLE_WISHLIST.gifts[0]);
-    fixture.detectChanges();
-
-    expect(component.giftPendingDeletion?.id).toBe(10);
+  it('links each gift row to its detail page, where the photo/description/actions live', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Sei sicuro di voler eliminare questo desiderio?');
+    const link = compiled.querySelector('a.gift-row') as HTMLAnchorElement | null;
+    expect(link?.getAttribute('href')).toBe('/gifts/10');
   });
 });

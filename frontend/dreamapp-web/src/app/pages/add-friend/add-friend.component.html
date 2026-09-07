@@ -1,5 +1,5 @@
 <div class="page">
-  <h1 class="page-title">Aggiungi lista di un amico ❤️</h1>
+  <app-page-header title="Aggiungi amico" backTo="/home" />
 
   @if (errorMessage) {
     <div class="alert alert-error">{{ errorMessage }}</div>
@@ -15,6 +15,7 @@
       @if (searching) {
         <span class="spinner"></span>
       } @else {
+        <app-icon name="search" [size]="18" />
         CERCA
       }
     </button>
@@ -23,13 +24,15 @@
   @if (searched) {
     @if (foundUser) {
       <div class="card result-card">
-        <p class="found-label">✓ Utente trovato</p>
+        <span class="found-icon"><app-icon name="check" [size]="18" /></span>
+        <p class="found-label">Utente trovato</p>
         <h2>{{ foundUser.username }}</h2>
         <p class="muted">&#64;{{ foundUser.username }}</p>
         <button type="button" class="btn btn-primary btn-block" (click)="addList()" [disabled]="adding">
           @if (adding) {
             <span class="spinner"></span>
           } @else {
+            <app-icon name="plus" [size]="18" />
             AGGIUNGI LISTA
           }
         </button>

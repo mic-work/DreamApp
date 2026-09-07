@@ -41,6 +41,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/add-gift/add-gift.component').then((m) => m.AddGiftComponent)
   },
   {
+    path: 'gifts/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/gift-detail/gift-detail.component').then((m) => m.GiftDetailComponent)
+  },
+  {
     path: 'add-friend',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/add-friend/add-friend.component').then((m) => m.AddFriendComponent)

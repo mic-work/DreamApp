@@ -6,11 +6,13 @@ import { GiftService } from '../../core/services/gift.service';
 import { ImageService } from '../../core/services/image.service';
 import { GiftPriority } from '../../models/gift.model';
 import { getApiErrorMessage } from '../../shared/api-error.util';
+import { IconComponent } from '../../shared/components/icon/icon.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-add-gift',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, IconComponent, PageHeaderComponent],
   templateUrl: './add-gift.component.html',
   styleUrl: './add-gift.component.scss'
 })
