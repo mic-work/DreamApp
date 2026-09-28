@@ -11,10 +11,10 @@ namespace DreamApp.Api.Models;
 /// </summary>
 public class Wishlist
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required]
-    public int OwnerId { get; set; }
+    public Guid OwnerId { get; set; }
 
     [Required, MaxLength(64)]
     public string Name { get; set; } = string.Empty;

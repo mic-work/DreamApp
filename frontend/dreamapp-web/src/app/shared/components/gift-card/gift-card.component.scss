@@ -13,6 +13,40 @@
   gap: 0.4rem;
 }
 
+.gift-row-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pending-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+/* Deliberately loud: this is the owner's cue that a friend has already
+   flagged this gift as given, and it's their turn to go confirm who. */
+.claim-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  background: #ffd94a;
+  color: #6b4c00;
+  box-shadow: 0 0 0 1px rgba(107, 76, 0, 0.18);
+}
+
 .gift-row-info h3 {
   margin: 0;
   font-size: 1rem;

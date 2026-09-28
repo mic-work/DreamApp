@@ -17,12 +17,12 @@ public class UsersControllerTests
         await new AuthController(db, new PasswordHasher(), new FakeJwtTokenService())
             .Register(new RegisterRequestDto { Username = "tatina", Email = "tatina@example.com", Password = "password123", ConfirmPassword = "password123" });
 
-        var result = new UsersController(db).AsUser(999).GetByUsername("tatina");
+        var result = new UsersController(db).AsUser(Guid.NewGuid()).GetByUsername("tatina");
 
         var ok = Assert.IsType<OkObjectResult>(result.Result);
         var dto = Assert.IsType<UserPublicDto>(ok.Value);
         Assert.Equal("tatina", dto.Username);
-        Assert.True(dto.WishlistId > 0);
+        Assert.NotEqual(Guid.Empty, dto.WishlistId);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class UsersControllerTests
     {
         var db = new FakeAppDbContext();
 
-        var result = new UsersController(db).AsUser(999).GetByUsername("ghost");
+        var result = new UsersController(db).AsUser(Guid.NewGuid()).GetByUsername("ghost");
 
         Assert.IsType<NotFoundObjectResult>(result.Result);
     }

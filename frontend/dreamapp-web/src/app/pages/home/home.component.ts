@@ -14,12 +14,11 @@ import { IconComponent } from '../../shared/components/icon/icon.component';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  myGiftsCount = 0;
   friendsWishlists: WishlistSummary[] = [];
   loading = true;
 
   /** Id of the friend wishlist whose "⋮" menu is currently open (one at a time). */
-  openMenuId: number | null = null;
+  openMenuId: string | null = null;
   friendPendingRemoval: WishlistSummary | null = null;
 
   constructor(
@@ -28,11 +27,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.wishlistService.getMyWishlist().subscribe({
-      next: (wishlist) => (this.myGiftsCount = wishlist.gifts.length),
-      error: () => (this.myGiftsCount = 0)
-    });
-
     this.wishlistService.getFriendsWishlists().subscribe({
       next: (wishlists) => {
         this.friendsWishlists = wishlists;
@@ -48,7 +42,7 @@ export class HomeComponent implements OnInit {
     this.openMenuId = null;
   }
 
-  toggleMenu(wishlistId: number, event: Event): void {
+  toggleMenu(wishlistId: string, event: Event): void {
     event.stopPropagation();
     this.openMenuId = this.openMenuId === wishlistId ? null : wishlistId;
   }

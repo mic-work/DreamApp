@@ -9,11 +9,50 @@
     @if (wishlist.gifts.length === 0) {
       <p class="empty-state">{{ wishlist.ownerUsername }} non ha ancora aggiunto desideri.</p>
     } @else {
-      <div class="card-list">
-        @for (gift of wishlist.gifts; track gift.id) {
-          <app-gift-card [gift]="gift" />
-        }
+      <div class="tab-bar" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="tab-btn"
+          [class.active]="activeTab === 'pending'"
+          [attr.aria-selected]="activeTab === 'pending'"
+          (click)="setTab('pending')"
+        >
+          Da regalare
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="tab-btn"
+          [class.active]="activeTab === 'given'"
+          [attr.aria-selected]="activeTab === 'given'"
+          (click)="setTab('given')"
+        >
+          Già regalati
+        </button>
       </div>
+
+      @if (activeTab === 'pending') {
+        @if (pendingGifts.length === 0) {
+          <p class="empty-state small">Hai già segnato come regalati tutti i desideri visibili.</p>
+        } @else {
+          <div class="card-list">
+            @for (gift of pendingGifts; track gift.id) {
+              <app-gift-card [gift]="gift" [username]="wishlist.ownerUsername" />
+            }
+          </div>
+        }
+      } @else {
+        @if (givenGifts.length === 0) {
+          <p class="empty-state small">Non hai ancora segnato nessun regalo come già dato.</p>
+        } @else {
+          <div class="card-list">
+            @for (gift of givenGifts; track gift.id) {
+              <app-gift-card [gift]="gift" [username]="wishlist.ownerUsername" />
+            }
+          </div>
+        }
+      }
     }
   }
 </div>

@@ -19,4 +19,18 @@ import { PriorityBadgeComponent } from '../priority-badge/priority-badge.compone
 })
 export class GiftCardComponent {
   @Input({ required: true }) gift!: Gift;
+
+  /**
+   * The wishlist owner's username, for building a readable
+   * /wishlist/{username}/gifts/{id} link. Only needed when showing a
+   * FRIEND's gift (gift.isOwner is false) — for the caller's own gifts the
+   * link always uses the literal 'me' segment, same as the rest of the app
+   * (/wishlist/me), so callers rendering only own gifts (e.g. MyWishlistComponent)
+   * can omit it.
+   */
+  @Input() username?: string;
+
+  get giftRoute(): string[] {
+    return ['/wishlist', this.gift.isOwner ? 'me' : this.username ?? 'me', 'gifts', this.gift.id];
+  }
 }

@@ -13,7 +13,7 @@ percorso e backup.
 
 | Colonna       | Tipo     | Note                                   |
 |---------------|----------|-----------------------------------------|
-| Id            | int (PK) | autoincrementale                        |
+| Id            | Guid (PK) | generato dal client EF Core alla creazione |
 | Username      | string   | **univoco** (indice unico)              |
 | Email         | string   | **univoco** (indice unico)              |
 | PasswordHash  | string   | hash PBKDF2, mai la password in chiaro  |
@@ -23,8 +23,8 @@ percorso e backup.
 
 | Colonna   | Tipo     | Note                                          |
 |-----------|----------|-------------------------------------------------|
-| Id        | int (PK) |                                                  |
-| OwnerId   | int (FK) | → User.Id, `OnDelete: Cascade`                  |
+| Id        | Guid (PK) |                                                  |
+| OwnerId   | Guid (FK) | → User.Id, `OnDelete: Cascade`                  |
 | Name      | string   |                                                  |
 | CreatedAt | datetime | UTC                                             |
 
@@ -38,12 +38,12 @@ più wishlist per utente in futuro senza una migrazione distruttiva.
 
 | Colonna     | Tipo             | Note                                             |
 |-------------|------------------|---------------------------------------------------|
-| Id          | int (PK)         |                                                     |
-| WishlistId  | int (FK)         | → Wishlist.Id, `OnDelete: Cascade`                 |
+| Id          | Guid (PK)        |                                                     |
+| WishlistId  | Guid (FK)        | → Wishlist.Id, `OnDelete: Cascade`                 |
 | Name        | string           | obbligatorio                                       |
 | Description | string?          | opzionale                                          |
 | Notes       | string?          | opzionale                                          |
-| ImageUrl    | string?          | URL della foto (mai un binario), vedi architecture.md |
+| ImageUrl    | string?          | **deprecato**: URL della singola foto pre multi-foto, vedi GiftPhoto |
 | ProductUrl  | string?          | link al prodotto                                   |
 | Priority    | string           | `Low` \| `Medium` \| `High` (enum salvato come stringa) |
 | CreatedAt   | datetime         | UTC                                                |
@@ -53,9 +53,9 @@ più wishlist per utente in futuro senza una migrazione distruttiva.
 
 | Colonna     | Tipo     | Note                                                    |
 |-------------|----------|------------------------------------------------------------|
-| Id          | int (PK) |                                                              |
-| UserId      | int (FK) | → User.Id: l'utente a cui viene concesso l'accesso in lettura |
-| WishlistId  | int (FK) | → Wishlist.Id: la wishlist (di un ALTRO utente) resa visibile |
+| Id          | Guid (PK) |                                                              |
+| UserId      | Guid (FK) | → User.Id: l'utente a cui viene concesso l'accesso in lettura |
+| WishlistId  | Guid (FK) | → Wishlist.Id: la wishlist (di un ALTRO utente) resa visibile |
 | CreatedAt   | datetime | UTC                                                         |
 
 Indice **unico composito** su `(UserId, WishlistId)`: uno stesso utente non
@@ -63,14 +63,89 @@ può avere due volte accesso alla stessa wishlist (niente duplicati, come
 richiesto). Eliminare una riga qui rimuove solo il permesso di lettura:
 non tocca mai la wishlist o i regali del proprietario.
 
+### GiftPhoto
+
+| Colonna   | Tipo     | Note                                                   |
+|-----------|----------|----------------------------------------------------------|
+| Id        | Guid (PK) |                                                            |
+| GiftId    | Guid (FK) | → Gift.Id, `OnDelete: Cascade`                            |
+| Url       | string   | URL della foto (mai un binario), vedi architecture.md     |
+| SortOrder | int      | ordine di visualizzazione nella galleria (0-based)         |
+| CreatedAt | datetime | UTC                                                        |
+
+Un regalo può avere più foto, ognuna nella propria riga: sostituiscono
+`Gift.ImageUrl` (deprecato, mantenuto solo per i regali salvati prima di
+questa funzionalità). In creazione/modifica il client invia la lista
+completa di URL (già ottenuti da `POST /api/images`) e il server
+sostituisce interamente le righe precedenti.
+
+### GiftVisibility
+
+| Colonna   | Tipo     | Note                                                        |
+|-----------|----------|----------------------------------------------------------------|
+| Id        | Guid (PK) |                                                                  |
+| GiftId    | Guid (FK) | → Gift.Id, `OnDelete: Cascade`                                  |
+| UserId    | Guid (FK) | → User.Id (un amico), `OnDelete: Restrict`                      |
+| CreatedAt | datetime | UTC                                                             |
+
+Indice **unico composito** su `(GiftId, UserId)`. Un regalo senza righe
+qui è visibile a chiunque abbia accesso alla wishlist (default); con
+almeno una riga, solo agli utenti elencati (oltre al proprietario, che
+vede sempre tutto). Gli id accettati in scrittura sono sempre filtrati lato
+server sugli utenti che il PROPRIETARIO ha aggiunto come amico (cioè le cui
+wishlist il proprietario può vedere) — **non** su chi ha semplicemente
+aggiunto il proprietario. Questo permette di assegnare un regalo a una
+persona specifica anche prima che quella persona abbia aggiunto a sua
+volta il proprietario (in tal caso però non vede comunque nulla della sua
+wishlist, finché non lo fa).
+
+### GiftReception
+
+| Colonna        | Tipo     | Note                                                       |
+|----------------|----------|----------------------------------------------------------------|
+| Id             | Guid (PK) |                                                                  |
+| GiftId         | Guid (FK) | → Gift.Id, `OnDelete: Cascade`                                  |
+| MarkedByUserId | Guid (FK) | → User.Id: l'amico che ha registrato questo stato, `OnDelete: Restrict` |
+| GivenByUserId  | Guid (FK) | → User.Id: chi ha effettivamente regalato l'oggetto, `OnDelete: Restrict` |
+| ReceivedAt     | datetime | UTC                                                             |
+
+Indice **unico composito** su `(GiftId, MarkedByUserId)`: ogni persona ha
+al più una riga per regalo. Due ruoli, non simmetrici:
+
+- La riga del **proprietario** (`MarkedByUserId` = proprietario) è la
+  conferma **definitiva e immediata**: "l'ho già ricevuto, da
+  `GivenByUserId`". Basta da sola a far scattare lo stato "ricevuto" per
+  `GivenByUserId` senza bisogno che quest'ultimo faccia nulla.
+- La riga di un **amico** (`MarkedByUserId` = quell'amico) è sempre
+  un'autocandidatura (`GivenByUserId` == `MarkedByUserId`): "credo di aver
+  già regalato questo". È **privata** e resta **provvisoria** finché la
+  riga del proprietario non nomina lo stesso amico — da sola non conferma
+  mai nulla, indipendentemente da chi dei due agisce per primo. Il
+  proprietario vede comunque l'elenco di chi si è autocandidato (mai il
+  dettaglio delle righe altrui) come suggerimento per scegliere il vero
+  donatore.
+
+Segnare "non ricevuto"/ritirare la segnalazione rimuove semplicemente la
+riga di chi chiama.
+
 ## Relazioni
 
 ```
 User ──owns──> Wishlist ──contains──> Gift
 User ──canView (via WishlistAccess)──> Wishlist
+Gift ──has many──> GiftPhoto
+Gift ──restricted to (via GiftVisibility)──> User
+Gift ──received/given status (via GiftReception: owner's row = definitive, friend's row = pending self-claim)──> User (GivenByUserId)
 ```
 
 ## Migrazioni EF Core
+
+Tutte le chiavi primarie ed esterne dello schema sono `Guid` (non più
+`int` autoincrementali): EF Core le genera lato client alla `Add()`,
+quindi ogni riga ha già il proprio Id prima ancora di `SaveChangesAsync`.
+Questo ha richiesto di ricreare lo schema da zero: le vecchie migration
+(basate su chiavi `int`) e il file `dreamapp.db` locale sono stati
+eliminati e vanno rigenerati.
 
 Il repository include la configurazione EF Core (DbContext, Fluent API in
 `OnModelCreating`, pacchetto `Microsoft.EntityFrameworkCore.Design`) ma

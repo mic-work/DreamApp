@@ -9,10 +9,10 @@ namespace DreamApp.Api.Models;
 /// </summary>
 public class WishlistAccess
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
-    public int UserId { get; set; }
-    public int WishlistId { get; set; }
+    public Guid UserId { get; set; }
+    public Guid WishlistId { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

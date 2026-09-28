@@ -26,8 +26,17 @@
 
     <div class="field">
       <label>Foto</label>
-      @if (previewUrl) {
-        <img [src]="previewUrl" alt="Anteprima foto" class="photo-preview" />
+      @if (photos.length > 0) {
+        <div class="photo-gallery">
+          @for (photo of photos; track photo; let i = $index) {
+            <div class="photo-thumb">
+              <img [src]="photoPreviewUrl(photo)" alt="Foto del desiderio" />
+              <button type="button" class="photo-remove" (click)="removePhoto(i)" aria-label="Rimuovi foto">
+                <app-icon name="x" [size]="14" />
+              </button>
+            </div>
+          }
+        </div>
       }
       <label class="btn btn-outline photo-upload-btn">
         @if (uploadingPhoto) {
@@ -36,7 +45,7 @@
           <app-icon name="camera" [size]="18" />
           Aggiungi foto
         }
-        <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onPhotoSelected($event)" hidden />
+        <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple (change)="onPhotosSelected($event)" hidden />
       </label>
     </div>
 
@@ -62,6 +71,37 @@
         </label>
       </div>
     </div>
+
+    @if (friends.length > 0) {
+      <div class="field">
+        <label>Chi può vedere questo desiderio?</label>
+        <div class="radio-group">
+          <label class="radio-pill" [class.selected]="!restrictVisibility">
+            <input type="radio" name="visibility" (click)="setRestrictVisibility(false)" />
+            Tutti i miei amici
+          </label>
+          <label class="radio-pill" [class.selected]="restrictVisibility">
+            <input type="radio" name="visibility" (click)="setRestrictVisibility(true)" />
+            Solo alcuni
+          </label>
+        </div>
+
+        @if (restrictVisibility) {
+          <div class="viewer-list">
+            @for (friend of friends; track friend.id) {
+              <label class="viewer-item">
+                <input
+                  type="checkbox"
+                  [checked]="isFriendSelected(friend.id)"
+                  (change)="toggleFriend(friend.id)"
+                />
+                {{ friend.username }}
+              </label>
+            }
+          </div>
+        }
+      </div>
+    }
 
     <button type="submit" class="btn btn-primary btn-block" [disabled]="loading || uploadingPhoto">
       @if (loading) {

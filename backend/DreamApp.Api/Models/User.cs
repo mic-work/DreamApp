@@ -8,7 +8,7 @@ namespace DreamApp.Api.Models;
 /// </summary>
 public class User
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     [Required, MaxLength(32)]
     public string Username { get; set; } = string.Empty;

@@ -5,6 +5,13 @@ import { Gift } from '../../models/gift.model';
 import { GiftCardComponent } from '../../shared/components/gift-card/gift-card.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 
+/**
+ * The caller's own wishlist. Gifts are split into two tabs: still to
+ * receive, and already received BY THE CALLER (gift.receivedByMe — here,
+ * since every gift is the caller's own, it's the owner's definitive "I
+ * already got this, from X" record — immediate, no one else's
+ * corroboration needed; see GiftReception on the backend).
+ */
 @Component({
   selector: 'app-my-wishlist',
   standalone: true,
@@ -16,6 +23,7 @@ export class MyWishlistComponent implements OnInit {
   gifts: Gift[] = [];
   loading = true;
   errorMessage: string | null = null;
+  activeTab: 'pending' | 'received' = 'pending';
 
   constructor(private readonly wishlistService: WishlistService) {}
 
@@ -31,5 +39,21 @@ export class MyWishlistComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  /** Gifts not yet marked as received by the caller. */
+  get pendingGifts(): Gift[] {
+    return this.gifts.filter((gift) => !gift.receivedByMe);
+  }
+
+  /** Gifts the caller has already received, most recently confirmed first (gift.receivedAt). */
+  get receivedGifts(): Gift[] {
+    return this.gifts
+      .filter((gift) => gift.receivedByMe)
+      .sort((a, b) => new Date(b.receivedAt ?? 0).getTime() - new Date(a.receivedAt ?? 0).getTime());
+  }
+
+  setTab(tab: 'pending' | 'received'): void {
+    this.activeTab = tab;
   }
 }

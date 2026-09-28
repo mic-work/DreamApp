@@ -1,15 +1,15 @@
 import { Gift } from './gift.model';
 
 export interface WishlistSummary {
-  id: number;
+  id: string;
   ownerUsername: string;
   name: string;
   giftsCount: number;
 }
 
 export interface WishlistDetail {
-  id: number;
-  ownerId: number;
+  id: string;
+  ownerId: string;
   ownerUsername: string;
   name: string;
   createdAt: string;

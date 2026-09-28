@@ -10,14 +10,53 @@
   } @else if (gifts.length === 0) {
     <p class="empty-state">Non hai ancora aggiunto nessun desiderio. Inizia subito! ✨</p>
   } @else {
-    <div class="card-list">
-      @for (gift of gifts; track gift.id) {
-        <app-gift-card [gift]="gift" />
-      }
+    <div class="tab-bar" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="activeTab === 'pending'"
+        [attr.aria-selected]="activeTab === 'pending'"
+        (click)="setTab('pending')"
+      >
+        Da ricevere
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="activeTab === 'received'"
+        [attr.aria-selected]="activeTab === 'received'"
+        (click)="setTab('received')"
+      >
+        Ricevuti
+      </button>
     </div>
+
+    @if (activeTab === 'pending') {
+      @if (pendingGifts.length === 0) {
+        <p class="empty-state small">Hai già segnato come ricevuti tutti i tuoi desideri.</p>
+      } @else {
+        <div class="card-list">
+          @for (gift of pendingGifts; track gift.id) {
+            <app-gift-card [gift]="gift" />
+          }
+        </div>
+      }
+    } @else {
+      @if (receivedGifts.length === 0) {
+        <p class="empty-state small">Non hai ancora segnato nessun desiderio come ricevuto.</p>
+      } @else {
+        <div class="card-list">
+          @for (gift of receivedGifts; track gift.id) {
+            <app-gift-card [gift]="gift" />
+          }
+        </div>
+      }
+    }
   }
 
-  <a routerLink="/gifts/new" class="btn btn-primary btn-block add-gift-btn">
+  <a routerLink="/wishlist/me/gifts/new" class="btn btn-primary btn-block add-gift-btn">
     <app-icon name="plus" [size]="18" />
     AGGIUNGI REGALO
   </a>

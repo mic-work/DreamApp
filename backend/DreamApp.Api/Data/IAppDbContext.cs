@@ -18,8 +18,12 @@ public interface IAppDbContext
     IQueryable<Wishlist> Wishlists { get; }
     IQueryable<Gift> Gifts { get; }
     IQueryable<WishlistAccess> WishlistAccesses { get; }
+    IQueryable<GiftPhoto> GiftPhotos { get; }
+    IQueryable<GiftVisibility> GiftVisibilities { get; }
+    IQueryable<GiftReception> GiftReceptions { get; }
 
     void Add<TEntity>(TEntity entity) where TEntity : class;
     void Remove<TEntity>(TEntity entity) where TEntity : class;
+    void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,6 @@
 /** Full profile of the currently authenticated user. */
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   createdAt: string;
@@ -8,7 +8,13 @@ export interface User {
 
 /** Public information about another user, returned by the friend search endpoint. */
 export interface UserPublic {
-  id: number;
+  id: string;
   username: string;
-  wishlistId: number;
+  wishlistId: string;
+}
+
+/** Minimal info about a friend, used to populate pickers (gift visibility, "chi l'ha regalato"). */
+export interface UserSummary {
+  id: string;
+  username: string;
 }

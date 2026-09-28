@@ -5,8 +5,8 @@ namespace DreamApp.Api.DTOs.Wishlists;
 /// <summary>Full wishlist content, including gifts.</summary>
 public class WishlistDetailDto
 {
-    public int Id { get; set; }
-    public int OwnerId { get; set; }
+    public Guid Id { get; set; }
+    public Guid OwnerId { get; set; }
     public string OwnerUsername { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }

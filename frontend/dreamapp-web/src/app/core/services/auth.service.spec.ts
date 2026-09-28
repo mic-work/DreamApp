@@ -36,7 +36,7 @@ describe('AuthService', () => {
     req.flush({
       token: 'abc.def.ghi',
       expiresAt: new Date().toISOString(),
-      user: { id: 1, username: 'michele', email: 'michele@example.com', createdAt: new Date().toISOString() }
+      user: { id: 'user-1', username: 'michele', email: 'michele@example.com', createdAt: new Date().toISOString() }
     });
 
     expect(service.isAuthenticated()).toBeTrue();
@@ -48,7 +48,7 @@ describe('AuthService', () => {
     service.login({ username: 'michele', password: 'password123' }).subscribe();
     httpMock
       .expectOne(`${environment.apiUrl}/auth/login`)
-      .flush({ token: 't', expiresAt: new Date().toISOString(), user: { id: 1, username: 'michele', email: 'a@b.it', createdAt: '' } });
+      .flush({ token: 't', expiresAt: new Date().toISOString(), user: { id: 'user-1', username: 'michele', email: 'a@b.it', createdAt: '' } });
 
     service.logout();
 

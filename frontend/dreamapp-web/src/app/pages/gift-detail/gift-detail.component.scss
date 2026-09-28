@@ -60,13 +60,29 @@
   padding-top: 0.95rem;
 }
 
+.photo-scroller {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  margin: 0 -0.1rem;
+  padding: 0 0.1rem;
+}
+
 .detail-photo {
+  flex: 0 0 auto;
   width: 100%;
+  max-width: 420px;
   max-height: 320px;
   object-fit: cover;
   display: block;
   border-radius: var(--radius-md);
   background: var(--color-surface-alt);
+  scroll-snap-align: start;
+}
+
+.photo-scroller .detail-photo:only-child {
+  width: 100%;
 }
 
 .detail-actions {
@@ -78,4 +94,54 @@
 
 .btn-danger-text {
   color: #c0405a;
+}
+
+.reception-card {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reception-status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.giver-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.giver-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.claim-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.reception-status-pending {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.reception-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.reception-actions .btn {
+  flex: 1;
 }

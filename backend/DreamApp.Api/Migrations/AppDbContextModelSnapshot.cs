@@ -19,9 +19,9 @@ namespace DreamApp.Api.Migrations
 
             modelBuilder.Entity("DreamApp.Api.Models.Gift", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -55,8 +55,8 @@ namespace DreamApp.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("WishlistId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("WishlistId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -65,11 +65,92 @@ namespace DreamApp.Api.Migrations
                     b.ToTable("Gifts");
                 });
 
+            modelBuilder.Entity("DreamApp.Api.Models.GiftPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GiftId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GiftId");
+
+                    b.ToTable("GiftPhotos");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.GiftReception", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GiftId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GivenByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MarkedByUserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GivenByUserId");
+
+                    b.HasIndex("MarkedByUserId");
+
+                    b.HasIndex("GiftId", "MarkedByUserId")
+                        .IsUnique();
+
+                    b.ToTable("GiftReceptions");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.GiftVisibility", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("GiftId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("GiftId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("GiftVisibilities");
+                });
+
             modelBuilder.Entity("DreamApp.Api.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -101,9 +182,9 @@ namespace DreamApp.Api.Migrations
 
             modelBuilder.Entity("DreamApp.Api.Models.Wishlist", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -113,8 +194,8 @@ namespace DreamApp.Api.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -125,18 +206,18 @@ namespace DreamApp.Api.Migrations
 
             modelBuilder.Entity("DreamApp.Api.Models.WishlistAccess", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("WishlistId")
-                        .HasColumnType("INTEGER");
+                    b.Property<Guid>("WishlistId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -157,6 +238,63 @@ namespace DreamApp.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Wishlist");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.GiftPhoto", b =>
+                {
+                    b.HasOne("DreamApp.Api.Models.Gift", "Gift")
+                        .WithMany("Photos")
+                        .HasForeignKey("GiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gift");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.GiftReception", b =>
+                {
+                    b.HasOne("DreamApp.Api.Models.Gift", "Gift")
+                        .WithMany("Receptions")
+                        .HasForeignKey("GiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DreamApp.Api.Models.User", "GivenByUser")
+                        .WithMany()
+                        .HasForeignKey("GivenByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DreamApp.Api.Models.User", "MarkedByUser")
+                        .WithMany()
+                        .HasForeignKey("MarkedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Gift");
+
+                    b.Navigation("GivenByUser");
+
+                    b.Navigation("MarkedByUser");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.GiftVisibility", b =>
+                {
+                    b.HasOne("DreamApp.Api.Models.Gift", "Gift")
+                        .WithMany("VisibleTo")
+                        .HasForeignKey("GiftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DreamApp.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Gift");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DreamApp.Api.Models.Wishlist", b =>
@@ -187,6 +325,15 @@ namespace DreamApp.Api.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Wishlist");
+                });
+
+            modelBuilder.Entity("DreamApp.Api.Models.Gift", b =>
+                {
+                    b.Navigation("Photos");
+
+                    b.Navigation("Receptions");
+
+                    b.Navigation("VisibleTo");
                 });
 
             modelBuilder.Entity("DreamApp.Api.Models.User", b =>

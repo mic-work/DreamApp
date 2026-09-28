@@ -7,7 +7,6 @@
       <h2>I miei desideri</h2>
       <p class="muted">Gestisci la tua lista</p>
     </div>
-    <span class="count-pill">{{ myGiftsCount }}</span>
   </a>
 
   <section class="friends-section">
@@ -24,7 +23,6 @@
             <a class="friend-link" [routerLink]="['/wishlist', wishlist.ownerUsername]">
               <span class="friend-avatar">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
               <span class="friend-name">{{ wishlist.ownerUsername }}</span>
-              <span class="count-pill">{{ wishlist.giftsCount }}</span>
             </a>
 
             <div class="friend-menu">

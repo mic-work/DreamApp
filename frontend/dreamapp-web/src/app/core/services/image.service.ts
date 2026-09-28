@@ -11,7 +11,7 @@ export interface UploadResult {
 export class ImageService {
   constructor(private readonly http: HttpClient) {}
 
-  /** Uploads a gift photo and returns the URL to store in Gift.imageUrl. */
+  /** Uploads a gift photo and returns its URL, to collect into a gift's `photos` gallery. */
   upload(file: File): Observable<UploadResult> {
     const formData = new FormData();
     formData.append('file', file);

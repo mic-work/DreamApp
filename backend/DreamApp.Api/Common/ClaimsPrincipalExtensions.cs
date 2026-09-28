@@ -9,10 +9,10 @@ public static class ClaimsPrincipalExtensions
     /// Throws if called on a principal that isn't authenticated — controllers using this must
     /// be decorated with [Authorize], which guarantees the claim is present.
     /// </summary>
-    public static int GetUserId(this ClaimsPrincipal principal)
+    public static Guid GetUserId(this ClaimsPrincipal principal)
     {
         var value = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (value is null || !int.TryParse(value, out var id))
+        if (value is null || !Guid.TryParse(value, out var id))
         {
             throw new InvalidOperationException("The current principal does not have a valid user id claim.");
         }

@@ -34,9 +34,13 @@
         </div>
       }
 
-      @if (imageUrl) {
+      @if (photoUrls.length > 0) {
         <div class="detail-section detail-photo-section">
-          <img [src]="imageUrl" [alt]="gift.name" class="detail-photo" />
+          <div class="photo-scroller">
+            @for (url of photoUrls; track url) {
+              <img [src]="url" [alt]="gift.name" class="detail-photo" />
+            }
+          </div>
         </div>
       }
     </div>
@@ -53,6 +57,72 @@
         </button>
       </div>
     }
+
+    <div class="card reception-card">
+      @if (gift.isOwner) {
+        @if (gift.receivedByMe) {
+          <p class="reception-status">
+            <app-icon name="check" [size]="16" />
+            Hai ricevuto questo regalo
+            @if (gift.receivedFromUsername) {
+              (da {{ gift.receivedFromUsername }})
+            }
+          </p>
+          <button type="button" class="btn btn-ghost btn-block" [disabled]="savingReception" (click)="undoReceived()">
+            <app-icon name="x" [size]="15" />
+            ANNULLA
+          </button>
+        } @else if (!editingReception) {
+          <button type="button" class="btn btn-outline btn-block" (click)="startMarkingReceived()">
+            <app-icon name="check" [size]="16" />
+            SEGNA COME RICEVUTO
+          </button>
+        } @else {
+          <span class="detail-label">Chi l'ha regalato?</span>
+          <div class="giver-list">
+            @for (viewer of viewers; track viewer.id) {
+              <label class="radio-pill giver-pill" [class.selected]="selectedGiverId === viewer.id">
+                <input type="radio" name="giver" (click)="selectedGiverId = viewer.id" />
+                {{ viewer.username }}
+                @if (gift.claimedByUserIds.includes(viewer.id)) {
+                  <span class="claim-hint">ha segnalato</span>
+                }
+              </label>
+            }
+          </div>
+          <div class="reception-actions">
+            <button type="button" class="btn btn-ghost" [disabled]="savingReception" (click)="cancelMarkingReceived()">ANNULLA</button>
+            <button type="button" class="btn btn-primary" [disabled]="savingReception || !selectedGiverId" (click)="confirmReceived()">
+              @if (savingReception) {
+                <span class="spinner"></span>
+              } @else {
+                CONFERMA
+              }
+            </button>
+          </div>
+        }
+      } @else {
+        @if (gift.receivedByMe) {
+          <p class="reception-status">
+            <app-icon name="check" [size]="16" />
+            Confermato: hai già regalato questo desiderio
+          </p>
+        } @else if (gift.myClaimPending) {
+          <p class="reception-status reception-status-pending">
+            Hai segnalato di aver già regalato questo desiderio. In attesa di conferma da parte del proprietario.
+          </p>
+          <button type="button" class="btn btn-ghost btn-block" [disabled]="savingReception" (click)="undoReceived()">
+            <app-icon name="x" [size]="15" />
+            ANNULLA
+          </button>
+        } @else {
+          <button type="button" class="btn btn-outline btn-block" [disabled]="savingReception" (click)="markGivenByMe()">
+            <app-icon name="check" [size]="16" />
+            SEGNA COME GIÀ REGALATO
+          </button>
+        }
+      }
+    </div>
   }
 </div>
 

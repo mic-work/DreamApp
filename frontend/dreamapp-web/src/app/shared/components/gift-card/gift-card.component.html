@@ -1,7 +1,15 @@
-<a class="card gift-row" [routerLink]="['/gifts', gift.id]">
+<a class="card gift-row" [routerLink]="giftRoute">
   <div class="gift-row-info">
     <h3>{{ gift.name }}</h3>
-    <app-priority-badge [priority]="gift.priority" />
+    <div class="gift-row-badges">
+      <app-priority-badge [priority]="gift.priority" />
+      @if (!gift.isOwner && gift.myClaimPending) {
+        <span class="pending-badge">In attesa di conferma</span>
+      }
+      @if (gift.isOwner && gift.claimedByUserIds.length > 0) {
+        <span class="claim-alert-badge">Un amico ha segnalato questo regalo</span>
+      }
+    </div>
   </div>
   <app-icon name="chevron-right" [size]="18" class="chevron" />
 </a>

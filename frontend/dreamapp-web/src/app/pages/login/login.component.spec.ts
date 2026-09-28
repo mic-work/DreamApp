@@ -42,7 +42,7 @@ describe('LoginComponent', () => {
     req.flush({
       token: 'abc',
       expiresAt: new Date().toISOString(),
-      user: { id: 1, username: 'michele', email: 'a@b.it', createdAt: '' }
+      user: { id: 'user-1', username: 'michele', email: 'a@b.it', createdAt: '' }
     });
 
     expect(navigateSpy).toHaveBeenCalledWith('/home');

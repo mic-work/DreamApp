@@ -46,8 +46,8 @@ describe('AddGiftComponent (create mode)', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body.name).toBe('AirPods');
     req.flush({
-      id: 1,
-      wishlistId: 1,
+      id: 'gift-1',
+      wishlistId: 'wishlist-1',
       name: 'AirPods',
       priority: 'High',
       createdAt: new Date().toISOString(),
