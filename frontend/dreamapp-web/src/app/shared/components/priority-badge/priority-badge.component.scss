@@ -28,3 +28,23 @@
   display: inline-flex;
   gap: 1px;
 }
+
+/* Holographic variant: no pill, just stars + "Priorità alta" in a priority colour. */
+.badge.holo {
+  padding: 0;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge.holo.priority-high {
+  color: #a8294d;
+}
+
+.badge.holo.priority-medium {
+  color: #85560a;
+}
+
+.badge.holo.priority-low {
+  color: #2d62ad;
+}

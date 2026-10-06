@@ -56,11 +56,6 @@ export const routes: Routes = [
       import('./pages/wishlist-detail/wishlist-detail.component').then((m) => m.WishlistDetailComponent)
   },
   {
-    path: 'add-friend',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/add-friend/add-friend.component').then((m) => m.AddFriendComponent)
-  },
-  {
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/profile/profile.component').then((m) => m.ProfileComponent)

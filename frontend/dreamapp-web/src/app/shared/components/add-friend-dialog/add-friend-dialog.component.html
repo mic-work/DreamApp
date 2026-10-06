@@ -1,0 +1,68 @@
+@if (open) {
+  <div class="overlay" (click)="closed.emit()">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="addFriendTitle" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2 id="addFriendTitle">Aggiungi amico</h2>
+        <button type="button" class="close-btn" aria-label="Chiudi" (click)="closed.emit()">
+          <app-icon name="x" [size]="20" />
+        </button>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-error">{{ errorMessage }}</div>
+      }
+
+      <div class="field search-field">
+        <label for="friendUsername">Username</label>
+        <div class="search-input">
+          <input
+            #usernameInput
+            id="friendUsername"
+            type="text"
+            name="friendUsername"
+            autocomplete="off"
+            [ngModel]="username"
+            (ngModelChange)="onQueryChange($event)"
+            placeholder="Cerca per nome o parte del nome"
+          />
+          @if (searching) {
+            <span class="spinner spinner-dark search-spinner"></span>
+          }
+        </div>
+      </div>
+
+      @if (searched && !searching) {
+        @if (results.length === 0) {
+          <p class="not-found">Nessun utente trovato.</p>
+        } @else {
+          <ul class="results" aria-label="Utenti trovati">
+            @for (user of results; track user.id) {
+              <li class="result-row">
+                <span class="result-avatar">{{ user.username.charAt(0).toUpperCase() }}</span>
+                <span class="result-name">{{ user.username }}</span>
+                @if (isAlreadyAdded(user)) {
+                  <span class="already-added"><app-icon name="check" [size]="14" /> Già aggiunto</span>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-primary add-btn"
+                    [attr.aria-label]="'Aggiungi la lista di ' + user.username"
+                    [disabled]="addingId !== null"
+                    (click)="addList(user)"
+                  >
+                    @if (addingId === user.id) {
+                      <span class="spinner"></span>
+                    } @else {
+                      <app-icon name="plus" [size]="16" />
+                      AGGIUNGI
+                    }
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
+  </div>
+}

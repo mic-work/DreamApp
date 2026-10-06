@@ -12,11 +12,62 @@ namespace DreamApp.Api.Controllers;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
+    /// <summary>Upper bound of the "Aggiungi amico" search results, so a one-letter query can't return the whole user table.</summary>
+    private const int MaxSearchResults = 20;
+
     private readonly IAppDbContext _db;
 
     public UsersController(IAppDbContext db)
     {
         _db = db;
+    }
+
+    /// <summary>
+    /// Searches users whose username CONTAINS the given text, ignoring case
+    /// ("mic" or "ele" both find "michele") — the "Aggiungi amico" popup
+    /// shows the matches as a list. Same public-only data as
+    /// <see cref="GetByUsername"/> (never the email). The caller is never part
+    /// of the results (you can't add yourself), and the list is capped at
+    /// <see cref="MaxSearchResults"/>. An empty/blank query returns an empty list.
+    ///
+    /// The literal "search" segment wins over the "{username}" route below.
+    /// </summary>
+    [HttpGet("search")]
+    public ActionResult<IEnumerable<UserPublicDto>> Search([FromQuery] string? q)
+    {
+        var term = (q ?? string.Empty).Trim().ToLower();
+        if (term.Length == 0)
+        {
+            return Ok(new List<UserPublicDto>());
+        }
+
+        var callerId = User.GetUserId();
+
+        var matches = _db.Users
+            .Where(u => u.Id != callerId && u.Username.ToLower().Contains(term))
+            .OrderBy(u => u.Username)
+            .Take(MaxSearchResults)
+            .ToList();
+
+        var matchIds = matches.Select(u => u.Id).ToList();
+        var wishlistIdByOwner = _db.Wishlists
+            .Where(w => matchIds.Contains(w.OwnerId))
+            .ToList()
+            .GroupBy(w => w.OwnerId)
+            .ToDictionary(g => g.Key, g => g.First().Id);
+
+        // A wishlist is always created at registration; a user without one (should never happen) just can't be added, so skip it.
+        var results = matches
+            .Where(u => wishlistIdByOwner.ContainsKey(u.Id))
+            .Select(u => new UserPublicDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                WishlistId = wishlistIdByOwner[u.Id]
+            })
+            .ToList();
+
+        return Ok(results);
     }
 
     /// <summary>

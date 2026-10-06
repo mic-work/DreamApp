@@ -1,59 +1,93 @@
-<div class="page">
-  <h1 class="page-title">Ciao, {{ authService.currentUser()?.username }} 👋</h1>
-
-  <a routerLink="/wishlist/me" class="card my-wishes-card">
-    <span class="icon-badge"><app-icon name="gift" [size]="22" /></span>
-    <div class="my-wishes-info">
-      <h2>I miei desideri</h2>
-      <p class="muted">Gestisci la tua lista</p>
-    </div>
-  </a>
-
-  <section class="friends-section">
-    <h2>Liste dei miei amici</h2>
-
-    @if (loading) {
-      <div class="empty-state"><span class="spinner spinner-dark"></span></div>
-    } @else if (friendsWishlists.length === 0) {
-      <p class="empty-state">Non hai ancora aggiunto nessuna lista di un amico.</p>
-    } @else {
-      <div class="card-list">
-        @for (wishlist of friendsWishlists; track wishlist.id) {
-          <div class="card friend-card">
-            <a class="friend-link" [routerLink]="['/wishlist', wishlist.ownerUsername]">
-              <span class="friend-avatar">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
-              <span class="friend-name">{{ wishlist.ownerUsername }}</span>
-            </a>
-
-            <div class="friend-menu">
-              <button
-                type="button"
-                class="menu-trigger"
-                (click)="toggleMenu(wishlist.id, $event)"
-                aria-label="Altre azioni"
-              >
-                <app-icon name="dots-vertical" [size]="20" />
-              </button>
-
-              @if (openMenuId === wishlist.id) {
-                <div class="menu-dropdown">
-                  <button type="button" class="menu-item danger" (click)="askRemoveFriend(wishlist, $event)">
-                    <app-icon name="trash" [size]="16" />
-                    Rimuovi amico
-                  </button>
-                </div>
-              }
-            </div>
-          </div>
-        }
+<div class="page holo-page">
+  <div class="holo-content">
+    <div class="holo-greeting">
+      <span class="holo-avatar">{{ (authService.currentUser()?.username ?? '?').charAt(0).toUpperCase() }}</span>
+      <div class="holo-greeting-text">
+        <h1 class="page-title holo-title">Ciao, {{ authService.currentUser()?.username }} ✨</h1>
+        <p class="holo-subtitle">Le tue liste brillano oggi</p>
       </div>
-    }
+    </div>
 
-    <a routerLink="/add-friend" class="btn btn-outline btn-block add-friend-btn">
-      <app-icon name="plus" [size]="18" />
-      AGGIUNGI AMICO
-    </a>
-  </section>
+    <div class="holo-aside">
+      <div class="holo-card holo-stats">
+        <div class="holo-stat">
+          <span class="holo-stat-icon holo-stat-icon--a"><app-icon name="gift" [size]="16" /></span>
+          <span class="holo-stat-value">{{ desideriCount }}</span>
+          <span class="holo-stat-label">Desideri</span>
+        </div>
+        <div class="holo-stat">
+          <span class="holo-stat-icon holo-stat-icon--b"><app-icon name="user" [size]="16" /></span>
+          <span class="holo-stat-value">{{ friendsWishlists.length }}</span>
+          <span class="holo-stat-label">Amici</span>
+        </div>
+        <div class="holo-stat">
+          <span class="holo-stat-icon holo-stat-icon--c"><app-icon name="check" [size]="16" /></span>
+          <span class="holo-stat-value">{{ ricevutiCount }}</span>
+          <span class="holo-stat-label">Ricevuti</span>
+        </div>
+      </div>
+
+      <a routerLink="/wishlist/me" class="holo-card my-wishes-card">
+        <span class="icon-badge"><app-icon name="gift" [size]="22" /></span>
+        <div class="my-wishes-info">
+          <h2>I miei desideri</h2>
+          <p class="muted">Gestisci la tua lista</p>
+        </div>
+        <app-icon name="chevron-right" [size]="18" />
+      </a>
+    </div>
+
+    <section class="friends-section">
+      <h2 class="holo-section-title">I tuoi amici 🎈</h2>
+
+      @if (loading) {
+        <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+      } @else if (friendsWishlists.length === 0) {
+        <p class="empty-state">Non hai ancora aggiunto nessuna lista di un amico.</p>
+      } @else {
+        <div class="card-list">
+          @for (wishlist of friendsWishlists; track wishlist.id) {
+            <div class="holo-card friend-card">
+              <a class="friend-link" [routerLink]="['/wishlist', wishlist.ownerUsername]">
+                <span class="friend-avatar">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
+                <span class="friend-info">
+                  <span class="friend-name">{{ wishlist.ownerUsername }}</span>
+                  <span class="friend-count">
+                    {{ wishlist.giftsCount }} {{ wishlist.giftsCount === 1 ? 'desiderio disponibile' : 'desideri disponibili' }}
+                  </span>
+                </span>
+              </a>
+
+              <div class="friend-menu">
+                <button
+                  type="button"
+                  class="menu-trigger"
+                  (click)="toggleMenu(wishlist.id, $event)"
+                  aria-label="Altre azioni"
+                >
+                  <app-icon name="dots-vertical" [size]="20" />
+                </button>
+
+                @if (openMenuId === wishlist.id) {
+                  <div class="menu-dropdown">
+                    <button type="button" class="menu-item danger" (click)="askRemoveFriend(wishlist, $event)">
+                      <app-icon name="trash" [size]="16" />
+                      Rimuovi amico
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <button type="button" class="btn btn-outline btn-block add-friend-btn" (click)="openAddFriend()">
+        <app-icon name="plus" [size]="18" />
+        AGGIUNGI AMICO
+      </button>
+    </section>
+  </div>
 </div>
 
 <app-confirm-dialog
@@ -63,4 +97,14 @@
   confirmLabel="RIMUOVI"
   (confirmed)="confirmRemoveFriend()"
   (cancelled)="cancelRemoveFriend()"
+/>
+
+<!-- Outside .holo-page on purpose: that element keeps a transform (from the page
+     enter animation), which would make this fixed popup relative to the page
+     instead of the screen. -->
+<app-add-friend-dialog
+  [open]="addFriendOpen"
+  [existingUsernames]="friendUsernames"
+  (closed)="closeAddFriend()"
+  (added)="onFriendAdded()"
 />

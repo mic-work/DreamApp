@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -11,6 +11,14 @@ export class UserService {
   /** Looks up a user by username, used by the "add friend" search. */
   findByUsername(username: string): Observable<UserPublic> {
     return this.http.get<UserPublic>(`${environment.apiUrl}/users/${encodeURIComponent(username)}`);
+  }
+
+  /**
+   * Users whose username contains the given text (case-insensitive), for the
+   * "add friend" popup. The caller is never part of the results.
+   */
+  searchUsers(query: string): Observable<UserPublic[]> {
+    return this.http.get<UserPublic[]>(`${environment.apiUrl}/users/search`, { params: new HttpParams().set('q', query) });
   }
 
   /** Updates the personal data (username, email) of the currently authenticated user. */

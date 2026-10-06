@@ -30,6 +30,13 @@ export class GiftCardComponent {
    */
   @Input() username?: string;
 
+  /**
+   * 'holo' = the "Holographic" look used by the Home / My wishlist pages
+   * (gradient border + round gift icon + readable priority line). Every other
+   * caller keeps the default look, so a friend's wishlist is unchanged.
+   */
+  @Input() variant: 'default' | 'holo' = 'default';
+
   get giftRoute(): string[] {
     return ['/wishlist', this.gift.isOwner ? 'me' : this.username ?? 'me', 'gifts', this.gift.id];
   }

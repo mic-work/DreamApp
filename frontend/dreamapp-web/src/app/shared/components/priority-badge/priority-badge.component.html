@@ -1,8 +1,8 @@
-<span class="badge" [class]="'priority-' + priority.toLowerCase()">
+<span class="badge" [class]="'priority-' + priority.toLowerCase()" [class.holo]="holo">
   <span class="stars" aria-hidden="true">
     @for (star of stars; track $index) {
       <app-icon name="star-filled" [size]="12" />
     }
   </span>
-  <span>{{ label }}</span>
+  <span>{{ holo ? 'Priorità ' + label.toLowerCase() : label }}</span>
 </span>

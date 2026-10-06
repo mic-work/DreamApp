@@ -1,8 +1,11 @@
-<a class="card gift-row" [routerLink]="giftRoute">
+<a class="card gift-row" [class.holo]="variant === 'holo'" [routerLink]="giftRoute">
+  @if (variant === 'holo') {
+    <span class="gift-icon"><app-icon name="gift" [size]="22" /></span>
+  }
   <div class="gift-row-info">
     <h3>{{ gift.name }}</h3>
     <div class="gift-row-badges">
-      <app-priority-badge [priority]="gift.priority" />
+      <app-priority-badge [priority]="gift.priority" [holo]="variant === 'holo'" />
       @if (!gift.isOwner && gift.myClaimPending) {
         <span class="pending-badge">In attesa di conferma</span>
       }

@@ -12,6 +12,9 @@ import { IconComponent } from '../icon/icon.component';
 export class PriorityBadgeComponent {
   @Input({ required: true }) priority!: GiftPriority;
 
+  /** Text-only "Priorità alta" style used by the Holographic list rows. */
+  @Input() holo = false;
+
   get starCount(): number {
     switch (this.priority) {
       case 'High':
