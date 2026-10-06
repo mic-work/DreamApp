@@ -5,12 +5,13 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { getApiErrorMessage } from '../../shared/api-error.util';
+import { ChangePasswordDialogComponent } from '../../shared/components/change-password-dialog/change-password-dialog.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, IconComponent],
+  imports: [DatePipe, ReactiveFormsModule, IconComponent, ChangePasswordDialogComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -25,6 +26,7 @@ export class ProfileComponent {
   });
 
   editing = false;
+  changePasswordOpen = false;
   saving = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
@@ -68,6 +70,21 @@ export class ProfileComponent {
           this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile salvare le modifiche.');
         }
       });
+  }
+
+  openChangePassword(): void {
+    this.successMessage = null;
+    this.errorMessage = null;
+    this.changePasswordOpen = true;
+  }
+
+  closeChangePassword(): void {
+    this.changePasswordOpen = false;
+  }
+
+  onPasswordChanged(): void {
+    this.changePasswordOpen = false;
+    this.successMessage = 'Password aggiornata con successo.';
   }
 
   logout(): void {

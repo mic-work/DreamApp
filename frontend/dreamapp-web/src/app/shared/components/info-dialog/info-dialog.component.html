@@ -1,0 +1,16 @@
+@if (open) {
+  <div class="overlay" (click)="closed.emit()">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="infoDialogTitle" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2 id="infoDialogTitle">{{ title }}</h2>
+        <button type="button" class="close-btn" aria-label="Chiudi" (click)="closed.emit()">
+          <app-icon name="x" [size]="20" />
+        </button>
+      </div>
+
+      <p class="message">{{ message }}</p>
+
+      <button type="button" class="btn btn-primary btn-block" (click)="closed.emit()">{{ closeLabel }}</button>
+    </div>
+  </div>
+}

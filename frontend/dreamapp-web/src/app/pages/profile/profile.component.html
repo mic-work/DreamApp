@@ -22,6 +22,11 @@
             <app-icon name="pencil" [size]="17" />
             MODIFICA DATI
           </button>
+
+          <button type="button" class="btn btn-outline btn-block password-btn" (click)="openChangePassword()">
+            <app-icon name="lock" [size]="17" />
+            CAMBIA PASSWORD
+          </button>
         } @else {
           <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
             <div class="field">
@@ -63,3 +68,7 @@
     }
   </div>
 </div>
+
+<!-- Outside .holo-page on purpose: that element keeps a transform (enter
+     animation), which would make this fixed popup relative to the page, not the screen. -->
+<app-change-password-dialog [open]="changePasswordOpen" (closed)="closeChangePassword()" (changed)="onPasswordChanged()" />

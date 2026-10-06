@@ -19,7 +19,8 @@ export type IconName =
   | 'x'
   | 'logout'
   | 'search'
-  | 'note';
+  | 'note'
+  | 'lock';
 
 /**
  * Small inline-SVG icon set (outline style, 24x24, currentColor) used

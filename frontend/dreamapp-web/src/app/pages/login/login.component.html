@@ -23,6 +23,8 @@
           <input id="password" type="password" formControlName="password" autocomplete="current-password" placeholder="La tua password" />
         </div>
 
+        <button type="button" class="forgot-link" (click)="forgotPasswordOpen = true">Password dimenticata?</button>
+
         <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
           @if (loading) {
             <span class="spinner"></span>
@@ -39,3 +41,13 @@
     </p>
   </div>
 </div>
+
+<!-- Outside the page wrapper on purpose: the page keeps a transform (enter
+     animation), which would make this fixed popup relative to it, not the screen. -->
+<app-info-dialog
+  [open]="forgotPasswordOpen"
+  title="Password dimenticata?"
+  message="Per recuperare o reimpostare la tua password contatta Trolese Michele."
+  closeLabel="HO CAPITO"
+  (closed)="forgotPasswordOpen = false"
+/>

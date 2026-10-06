@@ -93,4 +93,61 @@ public class AuthControllerTests
         // Deliberately the same response as a wrong password, to avoid leaking which usernames exist.
         Assert.IsType<UnauthorizedObjectResult>(result.Result);
     }
+
+    private static ChangePasswordRequestDto PasswordChange(string current, string next) => new()
+    {
+        CurrentPassword = current,
+        NewPassword = next,
+        ConfirmNewPassword = next
+    };
+
+    [Fact]
+    public async Task ChangePassword_WithCorrectCurrentPassword_StoresTheNewOneAndLoginUsesIt()
+    {
+        var db = new FakeAppDbContext();
+        await CreateController(db).Register(ValidRegistration());
+        var userId = Assert.Single(db.Users).Id;
+
+        var result = await CreateController(db).AsUser(userId).ChangePassword(PasswordChange("password123", "newpassword456"));
+
+        Assert.IsType<NoContentResult>(result);
+        Assert.IsType<OkObjectResult>(CreateController(db).Login(new LoginRequestDto { Username = "michele", Password = "newpassword456" }).Result);
+        Assert.IsType<UnauthorizedObjectResult>(CreateController(db).Login(new LoginRequestDto { Username = "michele", Password = "password123" }).Result);
+    }
+
+    [Fact]
+    public async Task ChangePassword_WithWrongCurrentPassword_ReturnsBadRequestAndKeepsThePassword()
+    {
+        var db = new FakeAppDbContext();
+        await CreateController(db).Register(ValidRegistration());
+        var userId = Assert.Single(db.Users).Id;
+
+        var result = await CreateController(db).AsUser(userId).ChangePassword(PasswordChange("not-my-password", "newpassword456"));
+
+        // 400 (not 401): a 401 would make the web app log the user out.
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.IsType<OkObjectResult>(CreateController(db).Login(new LoginRequestDto { Username = "michele", Password = "password123" }).Result);
+    }
+
+    [Fact]
+    public async Task ChangePassword_ToTheSamePassword_ReturnsBadRequest()
+    {
+        var db = new FakeAppDbContext();
+        await CreateController(db).Register(ValidRegistration());
+        var userId = Assert.Single(db.Users).Id;
+
+        var result = await CreateController(db).AsUser(userId).ChangePassword(PasswordChange("password123", "password123"));
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task ChangePassword_ForUnknownUser_ReturnsNotFound()
+    {
+        var db = new FakeAppDbContext();
+
+        var result = await CreateController(db).AsUser(Guid.NewGuid()).ChangePassword(PasswordChange("password123", "newpassword456"));
+
+        Assert.IsType<NotFoundObjectResult>(result);
+    }
 }

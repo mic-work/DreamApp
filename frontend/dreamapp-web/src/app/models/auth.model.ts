@@ -17,3 +17,9 @@ export interface AuthResponse {
   expiresAt: string;
   user: User;
 }
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}

@@ -96,6 +96,42 @@ public class AuthController : ControllerBase
         return Ok(ToUserDto(user));
     }
 
+    /// <summary>
+    /// Lets the logged-in user change their own password. The target is always
+    /// the caller (taken from the JWT, never from the client) and the CURRENT
+    /// password must be provided, so a stolen/left-open session alone can't
+    /// lock the owner out.
+    ///
+    /// A wrong current password is answered with 400, not 401: a 401 would make
+    /// the web app treat the session as expired and log the user out.
+    /// </summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequestDto dto)
+    {
+        var userId = User.GetUserId();
+        var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+        if (user is null)
+        {
+            return NotFound(new ApiErrorDto("Utente non trovato."));
+        }
+
+        if (!_passwordHasher.Verify(dto.CurrentPassword, user.PasswordHash))
+        {
+            return BadRequest(new ApiErrorDto("La password attuale non è corretta."));
+        }
+
+        if (dto.NewPassword == dto.CurrentPassword)
+        {
+            return BadRequest(new ApiErrorDto("La nuova password deve essere diversa da quella attuale."));
+        }
+
+        user.PasswordHash = _passwordHasher.Hash(dto.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     private static AuthResponseDto BuildAuthResponse(User user, string token, DateTime expiresAt) => new()
     {
         Token = token,

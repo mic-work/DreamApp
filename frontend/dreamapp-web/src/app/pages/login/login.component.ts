@@ -5,11 +5,12 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { getApiErrorMessage } from '../../shared/api-error.util';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+import { InfoDialogComponent } from '../../shared/components/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, IconComponent],
+  imports: [ReactiveFormsModule, RouterLink, IconComponent, InfoDialogComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -18,6 +19,9 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+
+  /** "Password dimenticata?" popup. */
+  forgotPasswordOpen = false;
 
   readonly form = this.fb.nonNullable.group({
     username: ['', Validators.required],

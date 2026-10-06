@@ -3,7 +3,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../../models/auth.model';
+import { AuthResponse, ChangePasswordRequest, LoginRequest, RegisterRequest } from '../../models/auth.model';
 import { User } from '../../models/user.model';
 
 const TOKEN_KEY = 'dreamapp.token';
@@ -36,6 +36,11 @@ export class AuthService {
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/auth/register`, request)
       .pipe(tap((response) => this.storeSession(response)));
+  }
+
+  /** Changes the password of the logged-in user; the current session (token) stays valid. */
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/change-password`, request);
   }
 
   logout(): void {
