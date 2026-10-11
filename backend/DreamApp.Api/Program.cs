@@ -79,27 +79,30 @@ builder.Services.AddSwaggerGen(options =>
 // - production:  environment variable Jwt__Key (double underscore, the
 //                standard ASP.NET Core convention for nested config keys)
 // ---------------------------------------------------------------------
-var jwtKey = builder.Configuration["Jwt:Key"];
-if (string.IsNullOrWhiteSpace(jwtKey))
-{
-    throw new InvalidOperationException(
-        "Jwt:Key non configurato. In sviluppo: 'dotnet user-secrets set \"Jwt:Key\" \"<stringa-casuale-lunga>\"' " +
-        "dentro backend/DreamApp.Api. In produzione: variabile d'ambiente Jwt__Key. Vedi docs/architecture.md.");
-}
-
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "DreamApp";
-var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "DreamAppClients";
-
+// Validation parameters are built lazily from the final IConfiguration (not from
+// builder.Configuration at startup), so they always use the same Jwt:* values that
+// JwtTokenService signs tokens with — including overrides applied by the test host.
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer();
+builder.Services
+    .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IConfiguration>((options, configuration) =>
     {
+        var jwtKey = configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            throw new InvalidOperationException(
+                "Jwt:Key non configurato. In sviluppo: 'dotnet user-secrets set \"Jwt:Key\" \"<stringa-casuale-lunga>\"' " +
+                "dentro backend/DreamApp.Api. In produzione: variabile d'ambiente Jwt__Key. Vedi docs/architecture.md.");
+        }
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = jwtIssuer,
+            ValidIssuer = configuration["Jwt:Issuer"] ?? "DreamApp",
             ValidateAudience = true,
-            ValidAudience = jwtAudience,
+            ValidAudience = configuration["Jwt:Audience"] ?? "DreamAppClients",
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
             ValidateLifetime = true,
@@ -132,7 +135,6 @@ builder.Services.AddCors(options =>
 // client IP and per minute (RateLimiting:AuthPermitLimit, default 20 — generous
 // for real users, and shared between everyone behind the same proxy IP).
 // ---------------------------------------------------------------------
-var authPermitLimit = builder.Configuration.GetValue<int?>("RateLimiting:AuthPermitLimit") ?? 20;
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -147,13 +149,23 @@ builder.Services.AddRateLimiter(options =>
             httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = authPermitLimit,
+                // Read lazily from the request's configuration so tests can override it.
+                PermitLimit = httpContext.RequestServices.GetRequiredService<IConfiguration>()
+                    .GetValue<int?>("RateLimiting:AuthPermitLimit") ?? 20,
                 Window = TimeSpan.FromMinutes(1),
                 QueueLimit = 0
             }));
 });
 
 var app = builder.Build();
+
+// Fail fast at startup if the signing key is missing (checked on the final configuration).
+if (string.IsNullOrWhiteSpace(app.Configuration["Jwt:Key"]))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key non configurato. In sviluppo: 'dotnet user-secrets set \"Jwt:Key\" \"<stringa-casuale-lunga>\"' " +
+        "dentro backend/DreamApp.Api. In produzione: variabile d'ambiente Jwt__Key. Vedi docs/architecture.md.");
+}
 
 // Apply pending EF Core migrations automatically at startup. Requires that
 // at least one migration has been generated first — see docs/database.md.

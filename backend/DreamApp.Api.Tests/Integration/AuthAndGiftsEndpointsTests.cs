@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using DreamApp.Api.DTOs.Auth;
 using DreamApp.Api.DTOs.Gifts;
 using DreamApp.Api.Models;
@@ -17,6 +19,12 @@ public class AuthAndGiftsEndpointsTests : IDisposable
 {
     private readonly CustomWebApplicationFactory _factory = new();
     private readonly HttpClient _client;
+
+    // The API serializes enums as strings (e.g. "High"), so the test client must read them the same way.
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     public AuthAndGiftsEndpointsTests()
     {
@@ -46,7 +54,7 @@ public class AuthAndGiftsEndpointsTests : IDisposable
     [Fact]
     public async Task Register_ReturnsJwtToken_UsableForAuthenticatedRequests()
     {
-        var auth = await RegisterAsync("michele-" + Guid.NewGuid().ToString("N")[..8]);
+        var auth = await RegisterAsync("michele_" + Guid.NewGuid().ToString("N")[..8]);
 
         Assert.False(string.IsNullOrEmpty(auth.Token));
 
@@ -67,7 +75,7 @@ public class AuthAndGiftsEndpointsTests : IDisposable
     [Fact]
     public async Task Login_WithWrongPassword_ReturnsUnauthorized()
     {
-        var username = "login-test-" + Guid.NewGuid().ToString("N")[..8];
+        var username = "login_test_" + Guid.NewGuid().ToString("N")[..8];
         await RegisterAsync(username);
 
         var response = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequestDto
@@ -82,7 +90,7 @@ public class AuthAndGiftsEndpointsTests : IDisposable
     [Fact]
     public async Task CreateGift_ThenGetMyWishlist_IncludesTheNewGift()
     {
-        var auth = await RegisterAsync("gifter-" + Guid.NewGuid().ToString("N")[..8]);
+        var auth = await RegisterAsync("gifter_" + Guid.NewGuid().ToString("N")[..8]);
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", auth.Token);
 
         var createResponse = await _client.PostAsJsonAsync("/api/gifts", new GiftCreateDto
@@ -94,7 +102,7 @@ public class AuthAndGiftsEndpointsTests : IDisposable
 
         var wishlistResponse = await _client.GetAsync("/api/wishlists/me");
         wishlistResponse.EnsureSuccessStatusCode();
-        var wishlist = await wishlistResponse.Content.ReadFromJsonAsync<DreamApp.Api.DTOs.Wishlists.WishlistDetailDto>();
+        var wishlist = await wishlistResponse.Content.ReadFromJsonAsync<DreamApp.Api.DTOs.Wishlists.WishlistDetailDto>(JsonOptions);
 
         Assert.Contains(wishlist!.Gifts, g => g.Name == "AirPods");
     }
@@ -102,12 +110,12 @@ public class AuthAndGiftsEndpointsTests : IDisposable
     [Fact]
     public async Task UpdateGift_AsAnotherUser_ReturnsForbidden()
     {
-        var owner = await RegisterAsync("owner-" + Guid.NewGuid().ToString("N")[..8]);
-        var intruder = await RegisterAsync("intruder-" + Guid.NewGuid().ToString("N")[..8]);
+        var owner = await RegisterAsync("owner_" + Guid.NewGuid().ToString("N")[..8]);
+        var intruder = await RegisterAsync("intruder_" + Guid.NewGuid().ToString("N")[..8]);
 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", owner.Token);
         var created = await _client.PostAsJsonAsync("/api/gifts", new GiftCreateDto { Name = "Profumo", Priority = GiftPriority.Medium });
-        var gift = await created.Content.ReadFromJsonAsync<GiftDto>();
+        var gift = await created.Content.ReadFromJsonAsync<GiftDto>(JsonOptions);
 
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", intruder.Token);
         var updateResponse = await _client.PutAsJsonAsync($"/api/gifts/{gift!.Id}", new GiftUpdateDto { Name = "Hacked", Priority = GiftPriority.Low });
