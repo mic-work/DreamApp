@@ -53,15 +53,6 @@
   cursor: pointer;
 }
 
-.viewer-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  margin-top: 0.75rem;
-  padding: 0.4rem 0.1rem;
-  animation: fade-in-up 0.25s var(--ease-out-soft) both;
-}
-
 .viewer-item {
   display: flex;
   align-items: center;
@@ -81,4 +72,113 @@
   width: 18px;
   height: 18px;
   accent-color: var(--color-primary);
+}
+
+.viewer-all {
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  border-bottom: none;
+  padding-left: 0.1rem;
+}
+
+.friend-picker {
+  margin-top: 0.35rem;
+  animation: fade-in-up 0.25s var(--ease-out-soft) both;
+}
+
+.picker-trigger {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.picker-trigger.open {
+  border-color: var(--color-primary);
+}
+
+.picker-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-label.placeholder {
+  color: var(--color-text-muted);
+}
+
+.picker-chevron {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--color-text-muted);
+  border-bottom: 2px solid var(--color-text-muted);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.picker-trigger.open .picker-chevron {
+  transform: rotate(-135deg) translateY(-2px);
+}
+
+.picker-panel {
+  margin-top: 0.4rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+  animation: fade-in-up 0.2s var(--ease-out-soft) both;
+}
+
+.picker-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 0;
+  background: var(--color-surface-alt);
+  font: inherit;
+  font-size: 0.92rem;
+  outline: none;
+}
+
+/* Bounded height: with hundreds of friends the list scrolls inside the panel and SALVA stays close. */
+.picker-options {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 0.1rem 0.9rem;
+  overscroll-behavior: contain;
+}
+
+.picker-empty {
+  margin: 0;
+  padding: 0.9rem 0.2rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.visibility-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+.visibility-hint.warning {
+  color: var(--color-primary-dark);
 }

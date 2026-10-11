@@ -46,7 +46,15 @@ public class Gift
     /// <summary>Photo gallery, ordered by GiftPhoto.SortOrder.</summary>
     public List<GiftPhoto> Photos { get; set; } = new();
 
-    /// <summary>When empty, every friend with access to the wishlist can see this gift. When not empty, only the listed users can (plus the owner).</summary>
+    /// <summary>
+    /// true = every friend with access to the wishlist can see this gift
+    /// (including friends added in the future). false = only the users listed
+    /// in <see cref="VisibleTo"/> can (plus the owner, who always sees their
+    /// own gifts): an EMPTY list therefore means "nobody but the owner".
+    /// </summary>
+    public bool VisibleToAll { get; set; } = true;
+
+    /// <summary>Only meaningful when <see cref="VisibleToAll"/> is false: the friends allowed to see this gift.</summary>
     public List<GiftVisibility> VisibleTo { get; set; } = new();
 
     /// <summary>Per-friend "already given" records — see GiftReception for why these are private.</summary>

@@ -15,7 +15,13 @@ export interface Gift {
   createdAt: string;
   updatedAt: string;
   isOwner: boolean;
-  /** Only meaningful when isOwner is true: friends this gift is restricted to. Empty = visible to every friend. */
+  /**
+   * Only meaningful when isOwner is true: true = shared with every friend
+   * (including friends added later); false = shared only with
+   * `visibleToUserIds`, and an empty list means nobody but the owner.
+   */
+  visibleToAll: boolean;
+  /** Only meaningful when isOwner is true and `visibleToAll` is false: the friends this gift is shared with. */
   visibleToUserIds: string[];
   /**
    * Whether this gift is definitively confirmed as received/given. When
@@ -50,6 +56,8 @@ export interface GiftCreateRequest {
   imageUrls: string[];
   productUrl?: string | null;
   priority: GiftPriority;
+  /** true = every friend can see it; false = only `visibleToUserIds` (empty = nobody but the owner). */
+  visibleToAll: boolean;
   visibleToUserIds: string[];
 }
 

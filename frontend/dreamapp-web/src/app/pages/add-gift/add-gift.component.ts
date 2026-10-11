@@ -44,9 +44,17 @@ export class AddGiftComponent implements OnInit {
 
   /** Friends the current user has added (whose wishlists they can see) — the pool available for the visibility filter. */
   friends: UserSummary[] = [];
-  /** false = visible to every friend (default); true = only to the ones selected below. */
-  restrictVisibility = false;
+  /**
+   * true (default) = every friend can see the gift, including friends added
+   * later; false = only the friends in `selectedFriendIds`, and none selected
+   * means nobody but the owner.
+   */
+  shareWithAll = true;
   selectedFriendIds = new Set<string>();
+
+  /** Dropdown with the friend picker (only shown while "tutti" is off). */
+  friendPickerOpen = false;
+  friendSearch = '';
 
   get isEditMode(): boolean {
     return this.giftId !== null;
@@ -59,7 +67,7 @@ export class AddGiftComponent implements OnInit {
   ngOnInit(): void {
     this.wishlistService.getMyFriends().subscribe({
       next: (friends) => (this.friends = friends),
-      // Non-blocking: worst case the visibility filter section stays hidden, the gift still saves as "visible to everyone".
+      // Non-blocking: worst case the friend list stays empty, the "tutti i miei amici" choice still works.
       error: () => {}
     });
 
@@ -80,8 +88,8 @@ export class AddGiftComponent implements OnInit {
           priority: gift.priority
         });
         this.photos = [...gift.photos];
-        this.restrictVisibility = gift.visibleToUserIds.length > 0;
-        this.selectedFriendIds = new Set(gift.visibleToUserIds);
+        this.shareWithAll = gift.visibleToAll;
+        this.selectedFriendIds = new Set(gift.visibleToAll ? [] : gift.visibleToUserIds);
         this.loading = false;
       },
       error: () => {
@@ -128,11 +136,26 @@ export class AddGiftComponent implements OnInit {
     this.photos.splice(index, 1);
   }
 
-  setRestrictVisibility(restrict: boolean): void {
-    this.restrictVisibility = restrict;
-    if (!restrict) {
-      this.selectedFriendIds.clear();
+  /**
+   * "Tutti i miei amici": on = everyone (also future friends); off = nobody,
+   * until some friends are picked from the dropdown (opened right away).
+   */
+  toggleShareWithAll(): void {
+    this.shareWithAll = !this.shareWithAll;
+    this.selectedFriendIds.clear();
+    this.friendSearch = '';
+    this.friendPickerOpen = !this.shareWithAll;
+  }
+
+  toggleFriendPicker(): void {
+    this.friendPickerOpen = !this.friendPickerOpen;
+    if (!this.friendPickerOpen) {
+      this.friendSearch = '';
     }
+  }
+
+  onFriendSearch(event: Event): void {
+    this.friendSearch = (event.target as HTMLInputElement).value;
   }
 
   toggleFriend(friendId: string): void {
@@ -145,6 +168,44 @@ export class AddGiftComponent implements OnInit {
 
   isFriendSelected(friendId: string): boolean {
     return this.selectedFriendIds.has(friendId);
+  }
+
+  /** Friends matching the search box (case-insensitive, partial match). */
+  get filteredFriends(): UserSummary[] {
+    const query = this.friendSearch.trim().toLowerCase();
+    return query ? this.friends.filter((f) => f.username.toLowerCase().includes(query)) : this.friends;
+  }
+
+  /** Text shown on the dropdown button: who is picked so far. */
+  get selectionLabel(): string {
+    const count = this.selectedFriendIds.size;
+    if (count === 0) {
+      return 'Seleziona gli amici';
+    }
+    const names = this.friends.filter((f) => this.selectedFriendIds.has(f.id)).map((f) => f.username);
+    if (count <= 2 && names.length === count) {
+      return names.join(', ');
+    }
+    return count === 1 ? '1 amico selezionato' : `${count} amici selezionati`;
+  }
+
+  /** True when nobody but the owner will see the gift (shown as a warning hint). */
+  get visibleToNobody(): boolean {
+    return !this.shareWithAll && this.selectedFriendIds.size === 0;
+  }
+
+  get visibilitySummary(): string {
+    if (this.shareWithAll) {
+      return 'Tutti i tuoi amici vedranno questo desiderio, anche quelli che aggiungerai in futuro.';
+    }
+    if (this.visibleToNobody) {
+      return 'Nessun amico selezionato: solo tu vedrai questo desiderio.';
+    }
+    const count = this.selectedFriendIds.size;
+    if (this.friends.length > 0 && count === this.friends.length) {
+      return 'Tutti gli amici di oggi lo vedranno, ma non quelli che aggiungerai in futuro.';
+    }
+    return count === 1 ? 'Solo 1 amico vedrà questo desiderio.' : `Solo ${count} amici vedranno questo desiderio.`;
   }
 
   submit(): void {
@@ -161,7 +222,8 @@ export class AddGiftComponent implements OnInit {
       productUrl,
       priority,
       imageUrls: this.photos,
-      visibleToUserIds: this.restrictVisibility ? Array.from(this.selectedFriendIds) : []
+      visibleToAll: this.shareWithAll,
+      visibleToUserIds: this.shareWithAll ? [] : Array.from(this.selectedFriendIds)
     };
 
     this.loading = true;

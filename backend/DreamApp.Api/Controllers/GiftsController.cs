@@ -80,7 +80,7 @@ public class GiftsController : ControllerBase
 
         if (!isOwner)
         {
-            var visibleIds = GiftDtoFactory.FilterVisibleGiftIds(_db, gifts.Select(g => g.Id), userId);
+            var visibleIds = GiftDtoFactory.FilterVisibleGiftIds(_db, gifts, userId);
             gifts = gifts.Where(g => visibleIds.Contains(g.Id)).ToList();
         }
 
@@ -105,7 +105,7 @@ public class GiftsController : ControllerBase
         }
 
         var isOwner = wishlist.OwnerId == userId;
-        if (!isOwner && !GiftDtoFactory.IsVisibleTo(_db, gift.Id, userId))
+        if (!isOwner && !GiftDtoFactory.IsVisibleTo(_db, gift, userId))
         {
             return Forbid();
         }
@@ -134,6 +134,7 @@ public class GiftsController : ControllerBase
             ImageUrl = null,
             ProductUrl = dto.ProductUrl,
             Priority = dto.Priority,
+            VisibleToAll = dto.VisibleToAll,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -141,7 +142,7 @@ public class GiftsController : ControllerBase
         await _db.SaveChangesAsync();
 
         SavePhotos(gift.Id, dto.ImageUrls);
-        SaveVisibility(gift.Id, userId, dto.VisibleToUserIds);
+        SaveVisibility(gift.Id, userId, dto.VisibleToAll, dto.VisibleToUserIds);
         await _db.SaveChangesAsync();
 
         var result = GiftDtoFactory.Build(_db, gift, isOwner: true, callerId: userId, ownerId: userId);
@@ -177,13 +178,14 @@ public class GiftsController : ControllerBase
         gift.Notes = dto.Notes;
         gift.ProductUrl = dto.ProductUrl;
         gift.Priority = dto.Priority;
+        gift.VisibleToAll = dto.VisibleToAll;
         gift.UpdatedAt = DateTime.UtcNow;
 
         _db.RemoveRange(_db.GiftPhotos.Where(p => p.GiftId == gift.Id).ToList());
         _db.RemoveRange(_db.GiftVisibilities.Where(v => v.GiftId == gift.Id).ToList());
 
         SavePhotos(gift.Id, dto.ImageUrls);
-        SaveVisibility(gift.Id, userId, dto.VisibleToUserIds);
+        SaveVisibility(gift.Id, userId, dto.VisibleToAll, dto.VisibleToUserIds);
 
         await _db.SaveChangesAsync();
 
@@ -244,7 +246,7 @@ public class GiftsController : ControllerBase
         // A restricted gift's visibility list never includes the owner
         // themselves, so this check only makes sense for a friend looking
         // at someone else's gift — the owner can always mark their own.
-        if (!isOwner && !GiftDtoFactory.IsVisibleTo(_db, gift.Id, userId))
+        if (!isOwner && !GiftDtoFactory.IsVisibleTo(_db, gift, userId))
         {
             return Forbid();
         }
@@ -330,16 +332,24 @@ public class GiftsController : ControllerBase
     }
 
     /// <summary>
-    /// Persists the gift's visibility restriction and returns the ids
-    /// actually saved. Only ids the OWNER has personally added as a friend
+    /// Persists the gift's visibility list and returns the ids actually
+    /// saved. When the gift is shared with everyone (<paramref name="visibleToAll"/>)
+    /// no rows are stored at all: the flag alone says "every friend, even
+    /// future ones". When it is not, the list is exactly who can see it, and
+    /// an empty list means nobody but the owner. Only ids the OWNER has personally added as a friend
     /// (i.e. whose wishlist the owner can see — same pool as "Liste dei miei
     /// amici") are accepted — never the people who merely added the owner.
     /// This is what lets you designate "this gift is for Michele" even
     /// before Michele has added you back: never trust arbitrary ids from
     /// the client regardless.
     /// </summary>
-    private List<Guid> SaveVisibility(Guid giftId, Guid ownerId, List<Guid> requestedUserIds)
+    private List<Guid> SaveVisibility(Guid giftId, Guid ownerId, bool visibleToAll, List<Guid> requestedUserIds)
     {
+        if (visibleToAll)
+        {
+            return new List<Guid>();
+        }
+
         var myFriendIds = _db.WishlistAccesses
             .Where(a => a.UserId == ownerId)
             .Join(_db.Wishlists, a => a.WishlistId, w => w.Id, (a, w) => w.OwnerId)

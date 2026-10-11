@@ -210,7 +210,7 @@ public class WishlistsController : ControllerBase
 
         if (!isOwner)
         {
-            var visibleIds = GiftDtoFactory.FilterVisibleGiftIds(_db, gifts.Select(g => g.Id), callerId);
+            var visibleIds = GiftDtoFactory.FilterVisibleGiftIds(_db, gifts, callerId);
             gifts = gifts.Where(g => visibleIds.Contains(g.Id)).ToList();
         }
 

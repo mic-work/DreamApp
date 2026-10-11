@@ -161,6 +161,7 @@ Un regalo (`GiftDto`) ha questa forma quando torna dall'API:
   "createdAt": "...",
   "updatedAt": "...",
   "isOwner": true,
+  "visibleToAll": true,
   "visibleToUserIds": [],
   "receivedByMe": false,
   "receivedFromUserId": null,
@@ -173,8 +174,9 @@ Un regalo (`GiftDto`) ha questa forma quando torna dall'API:
 
 - `imageUrl` è deprecato (esiste solo per i regali salvati prima del
   supporto multi-foto): usare sempre `photos`.
-- `visibleToUserIds` è popolato **solo per il proprietario** (vedi sotto);
-  per chiunque altro è sempre `[]`.
+- `visibleToAll` e `visibleToUserIds` sono valorizzati **solo per il
+  proprietario** (vedi sotto); per chiunque altro sono sempre `false` e
+  `[]`.
 - `receivedByMe` / `receivedFromUserId` / `receivedFromUsername` /
   `receivedAt` / `myClaimPending` / `claimedByUserIds` — vedi "Stato
   ricevuto" più sotto. `receivedAt` è la data della conferma definitiva
@@ -184,11 +186,18 @@ Un regalo (`GiftDto`) ha questa forma quando torna dall'API:
 
 ### Visibilità di un regalo
 
-Ogni regalo può essere limitato a un sottoinsieme degli amici del
-proprietario (`visibleToUserIds`, impostato in creazione/modifica): se
-vuoto, il regalo è visibile a chiunque abbia accesso alla wishlist
-(comportamento di default); se non vuoto, solo agli amici elencati (oltre
-che al proprietario, che vede sempre tutto). Gli id accettati sono sempre
+Ogni regalo ha tre possibili livelli di visibilità, impostati in
+creazione/modifica:
+
+- `visibleToAll: true` (default se il campo è omesso): visibile a tutti gli
+  amici con accesso alla wishlist, **compresi quelli aggiunti in futuro**;
+  `visibleToUserIds` viene ignorato.
+- `visibleToAll: false` con `visibleToUserIds` non vuoto: visibile solo agli
+  amici elencati.
+- `visibleToAll: false` con `visibleToUserIds` vuoto: **non lo vede nessuno
+  tranne il proprietario**, che lo trova solo nella propria lista.
+
+Il proprietario vede sempre tutto. Gli id accettati sono sempre
 amici che il PROPRIETARIO ha aggiunto (vedi `GET /api/wishlists/me/friends`
 sopra) — **non** chi ha semplicemente aggiunto il proprietario: questo
 permette di assegnare un regalo a una persona specifica ("questo è per
@@ -255,13 +264,14 @@ wishlist di qualcun altro). Body:
   "imageUrls": ["/uploads/abc.jpg", "/uploads/def.jpg"],
   "productUrl": "https://...",
   "priority": "High",
+  "visibleToAll": true,
   "visibleToUserIds": []
 }
 ```
 
 `priority` accetta `"Low" | "Medium" | "High"`. `imageUrls` sono URL già
 ottenuti da `POST /api/images`, nell'ordine in cui vanno mostrati.
-`visibleToUserIds` accetta solo id di persone che **tu** hai aggiunto come
+`visibleToUserIds` conta solo se `visibleToAll` è `false` e accetta solo id di persone che **tu** hai aggiunto come
 amico (`GET /api/wishlists/me/friends`) — non chi ha aggiunto te: id non
 validi vengono ignorati in silenzio, mai fidandosi ciecamente del client.
 Risposta `201 Created` con il regalo creato.
@@ -272,8 +282,8 @@ Aggiorna un regalo (stesso body di `POST`). Il server ricarica il regalo
 dal database usando **solo** l'`{id}` nella route, poi verifica che la sua
 wishlist appartenga all'utente autenticato — cambiare manualmente l'id
 nella richiesta HTTP non permette di modificare un regalo altrui.
-`imageUrls` e `visibleToUserIds` sostituiscono **interamente** la galleria
-foto e la lista di visibilità precedenti.
+`imageUrls`, `visibleToAll` e `visibleToUserIds` sostituiscono
+**interamente** la galleria foto e la visibilità precedenti.
 
 - `200 OK` → regalo aggiornato.
 - `403 Forbidden` → il regalo esiste ma non è tuo.

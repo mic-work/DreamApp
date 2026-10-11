@@ -29,6 +29,14 @@ public class GiftUpdateDto
 
     public GiftPriority Priority { get; set; } = GiftPriority.Medium;
 
-    /// <summary>Friend ids this gift should be restricted to. Empty/omitted = visible to every friend who can see the wishlist.</summary>
+    /// <summary>
+    /// true (default when omitted) = visible to every friend who can see the
+    /// wishlist, including friends added later; <see cref="VisibleToUserIds"/>
+    /// is then ignored. false = visible only to <see cref="VisibleToUserIds"/>
+    /// (an empty list means nobody but the owner can see it).
+    /// </summary>
+    public bool VisibleToAll { get; set; } = true;
+
+    /// <summary>Friend ids allowed to see this gift. Only used when <see cref="VisibleToAll"/> is false.</summary>
     public List<Guid> VisibleToUserIds { get; set; } = new();
 }

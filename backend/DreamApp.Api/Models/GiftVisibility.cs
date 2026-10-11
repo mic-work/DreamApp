@@ -1,11 +1,13 @@
 namespace DreamApp.Api.Models;
 
 /// <summary>
-/// Restricts a single gift to a specific friend, or designates them as its
-/// intended giver. A gift with no GiftVisibility rows is visible to every
-/// friend who can already read the wishlist (the default, unrestricted
-/// behaviour); a gift with at least one row is visible only to the listed
-/// users (in addition to the owner, who always sees their own gifts).
+/// Lets a specific friend see a single gift, or designates them as its
+/// intended giver. Rows only matter when Gift.VisibleToAll is false: in that
+/// case the gift is visible only to the listed users (in addition to the
+/// owner, who always sees their own gifts), so a gift with
+/// VisibleToAll = false and no rows is visible to nobody but the owner.
+/// When Gift.VisibleToAll is true every friend who can read the wishlist
+/// sees the gift and there are no rows.
 /// UserId is always someone the OWNER has personally added as a friend
 /// (i.e. whose wishlist the owner can see) — never someone who merely added
 /// the owner. This is deliberate: it lets the owner say "this one is for

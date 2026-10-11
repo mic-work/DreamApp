@@ -48,6 +48,7 @@ più wishlist per utente in futuro senza una migrazione distruttiva.
 | Priority    | string           | `Low` \| `Medium` \| `High` (enum salvato come stringa) |
 | CreatedAt   | datetime         | UTC                                                |
 | UpdatedAt   | datetime         | UTC, aggiornato ad ogni modifica                   |
+| VisibleToAll | bool            | `true` (default) = visibile a tutti gli amici con accesso alla wishlist, anche quelli aggiunti in futuro; `false` = solo agli utenti in `GiftVisibility` |
 
 ### WishlistAccess
 
@@ -88,10 +89,14 @@ sostituisce interamente le righe precedenti.
 | UserId    | Guid (FK) | → User.Id (un amico), `OnDelete: Restrict`                      |
 | CreatedAt | datetime | UTC                                                             |
 
-Indice **unico composito** su `(GiftId, UserId)`. Un regalo senza righe
-qui è visibile a chiunque abbia accesso alla wishlist (default); con
-almeno una riga, solo agli utenti elencati (oltre al proprietario, che
-vede sempre tutto). Gli id accettati in scrittura sono sempre filtrati lato
+Indice **unico composito** su `(GiftId, UserId)`. Le righe contano solo
+quando `Gift.VisibleToAll` è `false`: il regalo è allora visibile solo
+agli utenti elencati (oltre al proprietario, che vede sempre tutto), e
+senza nessuna riga **non lo vede nessuno tranne il proprietario**. Se
+`Gift.VisibleToAll` è `true` non ci sono righe e il regalo è visibile a
+chiunque abbia accesso alla wishlist. (La migrazione `AddGiftVisibleToAll`
+imposta `VisibleToAll = false` solo per i regali che avevano già almeno
+una riga, così i regali esistenti mantengono la visibilità di prima.) Gli id accettati in scrittura sono sempre filtrati lato
 server sugli utenti che il PROPRIETARIO ha aggiunto come amico (cioè le cui
 wishlist il proprietario può vedere) — **non** su chi ha semplicemente
 aggiunto il proprietario. Questo permette di assegnare un regalo a una

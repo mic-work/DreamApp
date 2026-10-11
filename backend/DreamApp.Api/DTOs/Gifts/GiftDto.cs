@@ -32,6 +32,13 @@ public class GiftDto
     public List<Guid> VisibleToUserIds { get; set; } = new();
 
     /// <summary>
+    /// Only meaningful when IsOwner is true: true = the gift is shared with
+    /// every friend (VisibleToUserIds is then empty); false = shared only
+    /// with VisibleToUserIds, and an empty list means nobody but the owner.
+    /// </summary>
+    public bool VisibleToAll { get; set; }
+
+    /// <summary>
     /// Whether this gift has been definitively confirmed as received/given.
     /// When IsOwner is true: the owner recorded "I already received this,
     /// from X" — immediate, no corroboration needed (ReceivedFromUserId /

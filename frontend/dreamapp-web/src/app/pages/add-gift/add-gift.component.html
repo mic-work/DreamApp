@@ -72,36 +72,62 @@
       </div>
     </div>
 
-    @if (friends.length > 0) {
-      <div class="field">
-        <label>Chi può vedere questo desiderio?</label>
-        <div class="radio-group">
-          <label class="radio-pill" [class.selected]="!restrictVisibility">
-            <input type="radio" name="visibility" (click)="setRestrictVisibility(false)" />
-            Tutti i miei amici
-          </label>
-          <label class="radio-pill" [class.selected]="restrictVisibility">
-            <input type="radio" name="visibility" (click)="setRestrictVisibility(true)" />
-            Solo alcuni
-          </label>
-        </div>
+    <div class="field">
+      <label>Chi può vedere questo desiderio?</label>
 
-        @if (restrictVisibility) {
-          <div class="viewer-list">
-            @for (friend of friends; track friend.id) {
-              <label class="viewer-item">
+      <label class="viewer-item viewer-all">
+        <input type="checkbox" [checked]="shareWithAll" (change)="toggleShareWithAll()" />
+        Tutti i miei amici
+      </label>
+
+      @if (!shareWithAll) {
+        <div class="friend-picker">
+          <button
+            type="button"
+            class="picker-trigger"
+            [class.open]="friendPickerOpen"
+            [attr.aria-expanded]="friendPickerOpen"
+            (click)="toggleFriendPicker()"
+          >
+            <span class="picker-label" [class.placeholder]="visibleToNobody">{{ selectionLabel }}</span>
+            <span class="picker-chevron" aria-hidden="true"></span>
+          </button>
+
+          @if (friendPickerOpen) {
+            <div class="picker-panel">
+              @if (friends.length > 5) {
                 <input
-                  type="checkbox"
-                  [checked]="isFriendSelected(friend.id)"
-                  (change)="toggleFriend(friend.id)"
+                  type="search"
+                  class="picker-search"
+                  placeholder="Cerca un amico"
+                  autocomplete="off"
+                  [value]="friendSearch"
+                  (input)="onFriendSearch($event)"
                 />
-                {{ friend.username }}
-              </label>
-            }
-          </div>
-        }
-      </div>
-    }
+              }
+              <div class="picker-options">
+                @for (friend of filteredFriends; track friend.id) {
+                  <label class="viewer-item">
+                    <input
+                      type="checkbox"
+                      [checked]="isFriendSelected(friend.id)"
+                      (change)="toggleFriend(friend.id)"
+                    />
+                    {{ friend.username }}
+                  </label>
+                } @empty {
+                  <p class="picker-empty">
+                    {{ friends.length === 0 ? 'Non hai ancora aggiunto nessun amico.' : 'Nessun amico corrisponde alla ricerca.' }}
+                  </p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <p class="visibility-hint" [class.warning]="visibleToNobody">{{ visibilitySummary }}</p>
+    </div>
 
     <button type="submit" class="btn btn-primary btn-block" [disabled]="loading || uploadingPhoto">
       @if (loading) {

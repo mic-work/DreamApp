@@ -28,7 +28,7 @@ public static class GiftDtoFactory
         // Only the owner needs to know the current restriction list (to
         // prefill the edit form) — irrelevant, and never exposed, to anyone
         // else looking at the gift.
-        var visibleToUserIds = isOwner
+        var visibleToUserIds = isOwner && !gift.VisibleToAll
             ? db.GiftVisibilities.Where(v => v.GiftId == gift.Id).Select(v => v.UserId).ToList()
             : new List<Guid>();
 
@@ -101,6 +101,8 @@ public static class GiftDtoFactory
             CreatedAt = gift.CreatedAt,
             UpdatedAt = gift.UpdatedAt,
             IsOwner = isOwner,
+            // Same rule as the list above: only the owner is told how the gift is shared.
+            VisibleToAll = isOwner && gift.VisibleToAll,
             VisibleToUserIds = visibleToUserIds,
             ReceivedByMe = receivedByMe,
             ReceivedFromUserId = receivedFromUserId,
@@ -111,23 +113,29 @@ public static class GiftDtoFactory
         };
     }
 
-    /// <summary>True when a gift has no visibility restriction, or the given user is one of the friends it's restricted to.</summary>
-    public static bool IsVisibleTo(IAppDbContext db, Guid giftId, Guid userId)
+    /// <summary>
+    /// True when the gift is shared with every friend, or the given
+    /// (non-owner) user is one of the friends it is shared with. A gift that
+    /// is not shared with everyone and has an empty list is visible to nobody.
+    /// </summary>
+    public static bool IsVisibleTo(IAppDbContext db, Gift gift, Guid userId)
     {
-        var isRestricted = db.GiftVisibilities.Any(v => v.GiftId == giftId);
-        return !isRestricted || db.GiftVisibilities.Any(v => v.GiftId == giftId && v.UserId == userId);
+        return gift.VisibleToAll || db.GiftVisibilities.Any(v => v.GiftId == gift.Id && v.UserId == userId);
     }
 
-    /// <summary>Filters a batch of gift ids down to the ones visible to the given (non-owner) user.</summary>
-    public static HashSet<Guid> FilterVisibleGiftIds(IAppDbContext db, IEnumerable<Guid> giftIds, Guid userId)
+    /// <summary>Filters a batch of gifts down to the ids visible to the given (non-owner) user.</summary>
+    public static HashSet<Guid> FilterVisibleGiftIds(IAppDbContext db, IEnumerable<Gift> gifts, Guid userId)
     {
-        var idSet = giftIds.ToHashSet();
-        var restrictedGiftIds = db.GiftVisibilities.Where(v => idSet.Contains(v.GiftId)).Select(v => v.GiftId).ToHashSet();
+        var giftList = gifts.ToList();
+        var idSet = giftList.Select(g => g.Id).ToHashSet();
         var allowedForMeGiftIds = db.GiftVisibilities
             .Where(v => v.UserId == userId && idSet.Contains(v.GiftId))
             .Select(v => v.GiftId)
             .ToHashSet();
 
-        return idSet.Where(id => !restrictedGiftIds.Contains(id) || allowedForMeGiftIds.Contains(id)).ToHashSet();
+        return giftList
+            .Where(g => g.VisibleToAll || allowedForMeGiftIds.Contains(g.Id))
+            .Select(g => g.Id)
+            .ToHashSet();
     }
 }

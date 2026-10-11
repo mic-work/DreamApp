@@ -28,6 +28,9 @@ describe('AddGiftComponent (create mode)', () => {
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
     fixture.detectChanges();
+
+    // ngOnInit loads the friends the gift can be shared with.
+    httpMock.expectOne(`${environment.apiUrl}/wishlists/me/friends`).flush([]);
   });
 
   afterEach(() => httpMock.verify());
@@ -55,6 +58,102 @@ describe('AddGiftComponent (create mode)', () => {
     });
 
     expect(navigateSpy).toHaveBeenCalledWith('/wishlist/me');
+  });
+
+  it('shares the gift with every friend by default', () => {
+    component.form.patchValue({ name: 'AirPods' });
+
+    component.submit();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/gifts`);
+    expect(req.request.body.visibleToAll).toBeTrue();
+    expect(req.request.body.visibleToUserIds).toEqual([]);
+    req.flush({});
+  });
+
+  it('sends visibleToAll = false and an empty list when "tutti" is switched off and nobody is picked', () => {
+    component.form.patchValue({ name: 'Segreto' });
+
+    component.toggleShareWithAll();
+    expect(component.visibleToNobody).toBeTrue();
+    component.submit();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/gifts`);
+    expect(req.request.body.visibleToAll).toBeFalse();
+    expect(req.request.body.visibleToUserIds).toEqual([]);
+    req.flush({});
+  });
+
+  it('sends only the picked friends', () => {
+    component.friends = [
+      { id: 'f1', username: 'bob' },
+      { id: 'f2', username: 'carol' }
+    ];
+    component.form.patchValue({ name: 'Libro' });
+
+    component.toggleShareWithAll(); // off
+    component.toggleFriend('f1');
+    expect(component.visibleToNobody).toBeFalse();
+    component.submit();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/gifts`);
+    expect(req.request.body.visibleToAll).toBeFalse();
+    expect(req.request.body.visibleToUserIds).toEqual(['f1']);
+    req.flush({});
+  });
+
+  it('opens the friend dropdown when "tutti" is switched off and closes it when switched back on', () => {
+    expect(component.friendPickerOpen).toBeFalse();
+
+    component.toggleShareWithAll();
+    expect(component.friendPickerOpen).toBeTrue();
+
+    component.toggleShareWithAll();
+    expect(component.shareWithAll).toBeTrue();
+    expect(component.friendPickerOpen).toBeFalse();
+  });
+
+  it('keeps an explicit list even when every friend is ticked (future friends are not included)', () => {
+    component.friends = [
+      { id: 'f1', username: 'bob' },
+      { id: 'f2', username: 'carol' }
+    ];
+    component.toggleShareWithAll(); // off
+
+    component.toggleFriend('f1');
+    component.toggleFriend('f2');
+
+    expect(component.shareWithAll).toBeFalse();
+    expect(component.visibilitySummary).toContain('non quelli che aggiungerai in futuro');
+  });
+
+  it('filters the friends with a partial, case-insensitive search', () => {
+    component.friends = [
+      { id: 'f1', username: 'Michele' },
+      { id: 'f2', username: 'carol' },
+      { id: 'f3', username: 'ele' }
+    ];
+
+    component.friendSearch = 'ELE';
+
+    expect(component.filteredFriends.map((f) => f.id)).toEqual(['f1', 'f3']);
+  });
+
+  it('summarises the picked friends on the dropdown button', () => {
+    component.friends = [
+      { id: 'f1', username: 'bob' },
+      { id: 'f2', username: 'carol' },
+      { id: 'f3', username: 'dave' }
+    ];
+    component.toggleShareWithAll(); // off
+    expect(component.selectionLabel).toBe('Seleziona gli amici');
+
+    component.toggleFriend('f1');
+    expect(component.selectionLabel).toBe('bob');
+    component.toggleFriend('f2');
+    expect(component.selectionLabel).toBe('bob, carol');
+    component.toggleFriend('f3');
+    expect(component.selectionLabel).toBe('3 amici selezionati');
   });
 
   it('does not submit when the name is missing', () => {

@@ -55,6 +55,9 @@ namespace DreamApp.Api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("VisibleToAll")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid>("WishlistId")
                         .HasColumnType("TEXT");
 
