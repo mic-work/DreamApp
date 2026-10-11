@@ -14,4 +14,10 @@ public interface IImageStorageService
 {
     /// <summary>Saves the uploaded file and returns the URL clients should use to display it.</summary>
     Task<string> SaveAsync(IFormFile file, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes a previously saved photo given the URL returned by <see cref="SaveAsync"/>.
+    /// Best effort: an unknown/foreign URL or a missing file is silently ignored.
+    /// </summary>
+    void Delete(string imageUrl);
 }

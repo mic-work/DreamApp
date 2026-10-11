@@ -4,6 +4,7 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { Gift } from '../../models/gift.model';
 import { GiftCardComponent } from '../../shared/components/gift-card/gift-card.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 /**
  * The caller's own wishlist. Gifts are split into two tabs: still to
@@ -15,7 +16,7 @@ import { IconComponent } from '../../shared/components/icon/icon.component';
 @Component({
   selector: 'app-my-wishlist',
   standalone: true,
-  imports: [RouterLink, GiftCardComponent, IconComponent],
+  imports: [RouterLink, GiftCardComponent, IconComponent, EmptyStateComponent],
   templateUrl: './my-wishlist.component.html',
   styleUrl: './my-wishlist.component.scss'
 })

@@ -17,11 +17,17 @@
     <div class="field">
       <label for="description">Descrizione</label>
       <input id="description" type="text" formControlName="description" placeholder="Aggiungi qualche dettaglio (facoltativo)" />
+      @if (form.controls.description.invalid) {
+        <span class="field-error">La descrizione può avere al massimo 500 caratteri.</span>
+      }
     </div>
 
     <div class="field">
       <label for="notes">Note</label>
       <textarea id="notes" rows="3" formControlName="notes" placeholder="Dettagli utili per chi ti farà il regalo"></textarea>
+      @if (form.controls.notes.invalid) {
+        <span class="field-error">Le note possono avere al massimo 1000 caratteri.</span>
+      }
     </div>
 
     <div class="field">
@@ -51,7 +57,10 @@
 
     <div class="field">
       <label for="productUrl">Link prodotto</label>
-      <input id="productUrl" type="url" formControlName="productUrl" placeholder="https://..." />
+      <input id="productUrl" type="text" inputmode="url" autocapitalize="off" autocomplete="off" formControlName="productUrl" placeholder="https://..." />
+      @if (form.controls.productUrl.invalid && form.controls.productUrl.touched) {
+        <span class="field-error">Inserisci un indirizzo web valido (es. https://www.negozio.it/prodotto).</span>
+      }
     </div>
 
     <div class="field">

@@ -2,26 +2,26 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 800;
   white-space: nowrap;
 }
 
 .priority-high {
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  background: #ffe3ec;
+  color: #a8294d;
 }
 
 .priority-medium {
-  background: var(--color-gray-light);
-  color: var(--color-text);
+  background: #fff3d6;
+  color: #85560a;
 }
 
 .priority-low {
-  background: var(--color-surface-alt);
-  color: var(--color-text-muted);
+  background: #e4f0ff;
+  color: #2d62ad;
 }
 
 .stars {
@@ -29,22 +29,10 @@
   gap: 1px;
 }
 
-/* Holographic variant: no pill, just stars + "Priorità alta" in a priority colour. */
+/* Text-only variant used inside list rows: just the stars + "Priorità alta" in the priority colour. */
 .badge.holo {
   padding: 0;
   background: transparent;
   font-size: 0.8rem;
   font-weight: 700;
-}
-
-.badge.holo.priority-high {
-  color: #a8294d;
-}
-
-.badge.holo.priority-medium {
-  color: #85560a;
-}
-
-.badge.holo.priority-low {
-  color: #2d62ad;
 }

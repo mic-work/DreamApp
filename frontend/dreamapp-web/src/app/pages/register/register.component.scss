@@ -1,18 +1,1 @@
-.auth-page {
-  padding-top: 2.5rem;
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  color: var(--color-text-muted);
-}
-
-.auth-footer a {
-  font-weight: 700;
-  transition: opacity 0.15s ease;
-}
-
-.auth-footer a:hover {
-  opacity: 0.75;
-}
+/* The card, logo, title and footer are the shared .auth-* styles (see styles.scss). */

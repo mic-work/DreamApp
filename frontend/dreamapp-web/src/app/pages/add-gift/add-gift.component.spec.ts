@@ -60,6 +60,51 @@ describe('AddGiftComponent (create mode)', () => {
     expect(navigateSpy).toHaveBeenCalledWith('/wishlist/me');
   });
 
+  it('accepts a product link without https:// and sends it as a full address', () => {
+    component.form.patchValue({ name: 'Zaino', productUrl: 'www.negozio.it/zaino' });
+    expect(component.form.controls.productUrl.valid).toBeTrue();
+
+    component.submit();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/gifts`);
+    expect(req.request.body.productUrl).toBe('https://www.negozio.it/zaino');
+    req.flush({});
+  });
+
+  it('blocks the submit when the product link is not a web address', () => {
+    component.form.patchValue({ name: 'Zaino', productUrl: 'non è un link' });
+
+    component.submit();
+
+    httpMock.expectNone(`${environment.apiUrl}/gifts`);
+    expect(component.form.controls.productUrl.invalid).toBeTrue();
+  });
+
+  it('limits description and notes to what the server accepts', () => {
+    component.form.patchValue({ name: 'Zaino', description: 'a'.repeat(501), notes: 'b'.repeat(1001) });
+    expect(component.form.controls.description.invalid).toBeTrue();
+    expect(component.form.controls.notes.invalid).toBeTrue();
+
+    component.form.patchValue({ description: 'a'.repeat(500), notes: 'b'.repeat(1000) });
+    expect(component.form.valid).toBeTrue();
+  });
+
+  it('lets the user save again after a photo upload fails', () => {
+    const file = new File(['x'], 'foto.txt', { type: 'text/plain' });
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [file] });
+
+    component.onPhotosSelected({ target: input } as unknown as Event);
+    expect(component.uploadingPhoto).toBeTrue();
+
+    httpMock
+      .expectOne(`${environment.apiUrl}/images`)
+      .flush({ message: 'Formato immagine non supportato.' }, { status: 400, statusText: 'Bad Request' });
+
+    expect(component.uploadingPhoto).toBeFalse();
+    expect(component.errorMessage).toBe('Formato immagine non supportato.');
+  });
+
   it('shares the gift with every friend by default', () => {
     component.form.patchValue({ name: 'AirPods' });
 

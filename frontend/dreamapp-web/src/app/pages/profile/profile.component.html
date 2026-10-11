@@ -11,7 +11,7 @@
 
     @if (authService.currentUser(); as user) {
       <div class="card profile-card">
-        <div class="avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+        <div class="avatar holo-live">{{ user.username.charAt(0).toUpperCase() }}</div>
 
         @if (!editing) {
           <h2>{{ user.username }}</h2>

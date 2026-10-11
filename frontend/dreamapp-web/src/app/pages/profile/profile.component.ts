@@ -21,7 +21,7 @@ export class ProfileComponent {
   readonly authService = inject(AuthService);
 
   readonly form = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32)]],
+    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32), Validators.pattern(/^[a-zA-Z0-9_.]+$/)]],
     email: ['', [Validators.required, Validators.email]]
   });
 

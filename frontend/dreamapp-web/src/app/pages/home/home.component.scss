@@ -1,15 +1,7 @@
 /*
- * "Holographic" look for the Home page only (option chosen by the user out
- * of a wider set of redesign mockups). Scoped entirely to this component —
- * every other page keeps the app's default rosa/bianco theme untouched.
- *
- * The page shell (.page) is capped at 480px by the global stylesheet, which
- * is right for a phone but leaves the pastel background stranded in a
- * narrow column — and shorter than the viewport — on a desktop browser.
- * `.holo-page` breaks the BACKGROUND out to the full viewport width/height
- * via a full-bleed pseudo element, while the actual content (`.holo-content`)
- * stays a single vertical column, exactly like every other page, only a
- * little wider on larger screens for readability.
+ * Home-specific pieces of the "Holographic" look. The shared surfaces
+ * (.holo-card, aurora background, page shell, tabs, empty states) live in the
+ * global stylesheet.
  */
 
 @mixin holo-border($radius) {
@@ -18,71 +10,6 @@
   background-image: linear-gradient(#fff, #fff), linear-gradient(120deg, #a1c4fd, #fbc7d4, #f6d365, #c2ffd8);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-}
-
-.holo-page {
-  position: relative;
-  z-index: 0;
-  max-width: none;
-  margin: 0;
-  /* A negative bottom margin the same size as the gap app.component.scss
-     reserves below .page for the fixed bottom nav: the box (and its
-     full-bleed background below) still paints all the way to the bottom of
-     the screen — behind the translucent nav, exactly like every card
-     already scrolls behind it — it just stops contributing that reserved
-     gap a second time to the document's total height, which is what was
-     leaving a sliver of extra vertical scroll. */
-  margin-bottom: calc(-1 * (var(--bottom-nav-height) + env(safe-area-inset-bottom) + 10px));
-  padding: 0;
-  min-height: 100vh;
-}
-
-.holo-page::before {
-  content: '';
-  position: absolute;
-  /* .holo-page itself is already unconstrained (max-width: none above), so
-     its box already spans the full width — no need for a 100vw/transform
-     breakout here (that trick is for escaping a constrained parent, and on
-     top of being unnecessary, 100vw overshoots by the scrollbar's width and
-     was what caused the horizontal scrollbar). */
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 12% 6%, rgba(161, 196, 253, 0.34) 0%, transparent 40%),
-    radial-gradient(circle at 90% 8%, rgba(251, 199, 212, 0.38) 0%, transparent 42%),
-    radial-gradient(circle at 12% 92%, rgba(194, 255, 216, 0.32) 0%, transparent 42%),
-    radial-gradient(circle at 92% 90%, rgba(246, 211, 101, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, #f4f2ff 0%, #fdf2fb 45%, #fff8ec 100%);
-}
-
-/*
- * The content stays a single vertical column at every screen size (exactly
- * like the rest of the app) — only its width grows a little on larger
- * screens for readability. The full-bleed pastel background above is what
- * takes care of "using the whole screen" on desktop, not a column split.
- */
-.holo-content {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 1.25rem 1.1rem 2rem;
-}
-
-@media (min-width: 720px) {
-  .holo-content {
-    max-width: 640px;
-    padding-top: 2.25rem;
-  }
-
-  .holo-avatar {
-    width: 62px;
-    height: 62px;
-    min-width: 62px;
-    font-size: 1.35rem;
-  }
-
-  .holo-title.page-title {
-    font-size: 1.7rem;
-  }
 }
 
 .holo-greeting {
@@ -120,32 +47,6 @@
   font-size: 0.86rem;
   color: #6a5f7d;
   font-weight: 500;
-}
-
-.holo-card {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  padding: 1rem 1.1rem;
-  margin-bottom: 1rem;
-  animation: fade-in-up 0.4s var(--ease-out-soft) both;
-  @include holo-border(20px);
-}
-
-a.holo-card {
-  text-decoration: none;
-  color: inherit;
-  transition: transform 0.2s var(--ease-out-soft), box-shadow 0.2s var(--ease-out-soft);
-}
-
-a.holo-card:hover,
-a.holo-card:focus-visible {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
-}
-
-a.holo-card:active {
-  transform: translateY(-1px) scale(0.99);
 }
 
 .holo-stats {
@@ -302,8 +203,9 @@ a.holo-card:active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
+  margin: -5px; /* keeps the card layout of the old 34px button */
   border-radius: 50%;
   border: none;
   background: transparent;

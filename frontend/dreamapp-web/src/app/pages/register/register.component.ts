@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { getApiErrorMessage } from '../../shared/api-error.util';
@@ -14,7 +15,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, IconComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })

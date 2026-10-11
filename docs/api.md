@@ -102,7 +102,10 @@ La wishlist di un altro utente (o la propria, se `username` coincide).
 
 Elenco delle wishlist a cui hai accesso (`WishlistAccess`), in forma
 sintetica: `[{ id, ownerUsername, name, giftsCount }]`. Usato dalla Home
-per la sezione "Liste dei miei amici".
+per la sezione "Liste dei miei amici". `giftsCount` conta solo i regali
+che **tu** puoi davvero aprire: non include quelli riservati ad altri
+amici né quelli che il proprietario ha già confermato come regalati da te
+(che stanno sotto "Già regalati").
 
 ### `GET /api/wishlists/me/friends` 🔒
 
@@ -333,11 +336,15 @@ chiamato).
 - `400 Bad Request` → file mancante, troppo grande o formato non
   supportato.
 
+Quando un regalo viene eliminato, o una foto viene tolta durante la
+modifica, il file corrispondente viene cancellato dal disco (se nessun
+altro regalo lo usa).
+
 ## Codici di stato usati
 
 `200` letture/aggiornamenti riusciti · `201` creazione riuscita · `204`
 operazione riuscita senza contenuto (delete, grant/revoke access) · `400`
 richiesta non valida · `401` non autenticato / credenziali errate · `403`
 autenticato ma non autorizzato su questa risorsa · `404` risorsa
-inesistente · `409` conflitto (duplicati) · `500` errore imprevisto del
-server.
+inesistente · `409` conflitto (duplicati) · `429` troppi tentativi di
+login/registrazione (vedi Sicurezza) · `500` errore imprevisto del server.

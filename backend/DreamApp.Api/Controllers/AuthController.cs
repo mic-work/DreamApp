@@ -6,6 +6,7 @@ using DreamApp.Api.Models;
 using DreamApp.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DreamApp.Api.Controllers;
 
@@ -27,6 +28,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequestDto dto)
     {
         var normalizedUsername = dto.Username.Trim();
@@ -67,6 +69,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     public ActionResult<AuthResponseDto> Login(LoginRequestDto dto)
     {
         var username = dto.Username.Trim();

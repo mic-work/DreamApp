@@ -1,0 +1,13 @@
+<div class="empty" [class.compact]="compact">
+  <span class="art" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="badge"><app-icon [name]="icon" [size]="compact ? 26 : 34" /></span>
+  </span>
+  <h3>{{ title }}</h3>
+  @if (text) {
+    <p>{{ text }}</p>
+  }
+  <ng-content />
+</div>

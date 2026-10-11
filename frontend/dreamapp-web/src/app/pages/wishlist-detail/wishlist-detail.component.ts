@@ -7,6 +7,7 @@ import { WishlistDetail } from '../../models/wishlist.model';
 import { getApiErrorMessage } from '../../shared/api-error.util';
 import { GiftCardComponent } from '../../shared/components/gift-card/gift-card.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 /**
  * A friend's wishlist, read-only. When it's not the caller's own list
@@ -21,7 +22,7 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
 @Component({
   selector: 'app-wishlist-detail',
   standalone: true,
-  imports: [GiftCardComponent, PageHeaderComponent],
+  imports: [GiftCardComponent, PageHeaderComponent, EmptyStateComponent],
   templateUrl: './wishlist-detail.component.html',
   styleUrl: './wishlist-detail.component.scss'
 })

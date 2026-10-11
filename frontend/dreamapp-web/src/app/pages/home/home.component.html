@@ -1,7 +1,7 @@
 <div class="page holo-page">
   <div class="holo-content">
     <div class="holo-greeting">
-      <span class="holo-avatar">{{ (authService.currentUser()?.username ?? '?').charAt(0).toUpperCase() }}</span>
+      <span class="holo-avatar holo-live">{{ (authService.currentUser()?.username ?? '?').charAt(0).toUpperCase() }}</span>
       <div class="holo-greeting-text">
         <h1 class="page-title holo-title">Ciao, {{ authService.currentUser()?.username }} ✨</h1>
         <p class="holo-subtitle">Le tue liste brillano oggi</p>
@@ -40,16 +40,29 @@
     <section class="friends-section">
       <h2 class="holo-section-title">I tuoi amici 🎈</h2>
 
+      @if (errorMessage) {
+        <div class="alert alert-error">{{ errorMessage }}</div>
+      }
+
       @if (loading) {
-        <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+        <div class="skeleton-list">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
       } @else if (friendsWishlists.length === 0) {
-        <p class="empty-state">Non hai ancora aggiunto nessuna lista di un amico.</p>
+        <app-empty-state
+          icon="user"
+          title="Nessun amico, per ora"
+          text="Aggiungi un amico per vedere la sua lista e scoprire cosa regalargli."
+          [compact]="true"
+        />
       } @else {
         <div class="card-list">
           @for (wishlist of friendsWishlists; track wishlist.id) {
             <div class="holo-card friend-card">
               <a class="friend-link" [routerLink]="['/wishlist', wishlist.ownerUsername]">
-                <span class="friend-avatar">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
+                <span class="friend-avatar" [style.background]="avatarGradient(wishlist.ownerUsername)">{{ wishlist.ownerUsername.charAt(0).toUpperCase() }}</span>
                 <span class="friend-info">
                   <span class="friend-name">{{ wishlist.ownerUsername }}</span>
                   <span class="friend-count">

@@ -121,15 +121,36 @@ public class WishlistsController : ControllerBase
     {
         var userId = User.GetUserId();
 
-        var summaries = _db.WishlistAccesses
+        var wishlists = _db.WishlistAccesses
             .Where(a => a.UserId == userId)
             .Join(_db.Wishlists, a => a.WishlistId, w => w.Id, (a, w) => w)
+            .Join(_db.Users, w => w.OwnerId, u => u.Id, (w, u) => new { w.Id, w.OwnerId, w.Name, OwnerUsername = u.Username })
+            .ToList();
+
+        var wishlistIds = wishlists.Select(w => w.Id).ToList();
+        var ownerIds = wishlists.Select(w => w.OwnerId).ToList();
+        var gifts = _db.Gifts.Where(g => wishlistIds.Contains(g.WishlistId)).ToList();
+
+        // Count only what the caller can actually open: gifts restricted to other friends are neither
+        // counted nor revealed, and gifts the owner already confirmed as given BY THE CALLER sit under
+        // "Già regalati" on the friend's page, so they are not "disponibili" any more either.
+        var visibleIds = GiftDtoFactory.FilterVisibleGiftIds(_db, gifts, userId);
+        var givenByMeIds = _db.GiftReceptions
+            .Where(r => r.GivenByUserId == userId && ownerIds.Contains(r.MarkedByUserId))
+            .Select(r => r.GiftId)
+            .ToHashSet();
+        var countByWishlist = gifts
+            .Where(g => visibleIds.Contains(g.Id) && !givenByMeIds.Contains(g.Id))
+            .GroupBy(g => g.WishlistId)
+            .ToDictionary(group => group.Key, group => group.Count());
+
+        var summaries = wishlists
             .Select(w => new WishlistSummaryDto
             {
                 Id = w.Id,
-                OwnerUsername = w.Owner.Username,
+                OwnerUsername = w.OwnerUsername,
                 Name = w.Name,
-                GiftsCount = _db.Gifts.Count(g => g.WishlistId == w.Id)
+                GiftsCount = countByWishlist.GetValueOrDefault(w.Id)
             })
             .ToList();
 

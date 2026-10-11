@@ -3,23 +3,31 @@
   margin-bottom: 1.5rem;
 }
 
+/* Initial inside a gradient disc, ringed by the slowly drifting iridescent border. */
 .avatar {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: var(--color-primary-gradient);
-  color: #fff;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.85rem;
-  font-weight: 800;
-  margin: 0 auto 0.9rem;
-  animation: pop-in 0.4s var(--ease-out-soft) both, pulse-ring 2.2s ease-out 0.4s 2;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 600;
+  background-image: linear-gradient(135deg, #ea7f98, #cc4a6c), var(--holo-gradient);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 12px 26px rgba(154, 120, 190, 0.3);
 }
 
 .profile-card h2 {
   margin: 0 0 0.2rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.55rem;
 }
 
 .muted {
@@ -33,7 +41,7 @@
 }
 
 .edit-btn {
-  margin-top: 1.1rem;
+  margin-top: 1.25rem;
 }
 
 .password-btn {
@@ -43,7 +51,7 @@
 .edit-form {
   text-align: left;
   margin-top: 0.75rem;
-  animation: fade-in-up 0.3s var(--ease-out-soft) both;
+  animation: fade-in-up 0.3s var(--ease-out) both;
 }
 
 .edit-actions {
@@ -58,40 +66,4 @@
 
 .logout-btn {
   margin-top: 0.5rem;
-}
-
-/*
- * Same full-bleed "Holographic" background as the Home page (see
- * home.component.scss for why it is built this way). Only the background
- * changes: the content keeps its usual single 480px column.
- */
-.holo-page {
-  position: relative;
-  z-index: 0;
-  max-width: none;
-  margin: 0;
-  /* Cancel the gap app.component.scss reserves below .page for the fixed
-     bottom nav, so the full-height background doesn't add a second scrollbar. */
-  margin-bottom: calc(-1 * (var(--bottom-nav-height) + env(safe-area-inset-bottom) + 10px));
-  padding: 0;
-  min-height: 100vh;
-}
-
-.holo-page::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 12% 6%, rgba(161, 196, 253, 0.34) 0%, transparent 40%),
-    radial-gradient(circle at 90% 8%, rgba(251, 199, 212, 0.38) 0%, transparent 42%),
-    radial-gradient(circle at 12% 92%, rgba(194, 255, 216, 0.32) 0%, transparent 42%),
-    radial-gradient(circle at 92% 90%, rgba(246, 211, 101, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, #f4f2ff 0%, #fdf2fb 45%, #fff8ec 100%);
-}
-
-.holo-content {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 1.25rem 1.1rem 2rem;
 }

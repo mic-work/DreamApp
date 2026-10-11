@@ -24,7 +24,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
             {
                 ["Jwt:Key"] = "test-only-signing-key-never-used-in-production-0123456789",
                 ["Database:Path"] = DatabasePath,
-                ["Storage:ImagesPath"] = _imagesPath
+                ["Storage:ImagesPath"] = _imagesPath,
+                ["RateLimiting:AuthPermitLimit"] = "100000"
             });
         });
     }

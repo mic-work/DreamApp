@@ -2,13 +2,37 @@
   <app-page-header [title]="gift?.name ?? 'Desiderio'" />
 
   @if (loading) {
-    <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+    <div class="skeleton-list">
+      <div class="skeleton detail-skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
   } @else if (errorMessage) {
     <div class="alert alert-error">{{ errorMessage }}</div>
   } @else if (gift) {
     <div class="card detail-card">
+      @if (photoUrls.length > 0) {
+        <div class="detail-section detail-photo-section">
+          <div class="photo-scroller">
+            @for (url of photoUrls; track url) {
+              <img [src]="url" [alt]="gift.name" class="detail-photo" />
+            }
+          </div>
+        </div>
+      }
+
       <div class="detail-section detail-top">
-        <app-priority-badge [priority]="gift.priority" />
+        <span
+          class="detail-icon"
+          [class.prio-high]="gift.priority === 'High'"
+          [class.prio-medium]="gift.priority === 'Medium'"
+          [class.prio-low]="gift.priority === 'Low'"
+        >
+          <app-icon name="gift" [size]="26" />
+        </span>
+        <div class="detail-top-text">
+          <span class="detail-label">Priorità</span>
+          <app-priority-badge [priority]="gift.priority" />
+        </div>
       </div>
 
       @if (gift.description) {
@@ -27,20 +51,10 @@
 
       @if (gift.productUrl) {
         <div class="detail-section">
-          <a class="gift-link" [href]="gift.productUrl" target="_blank" rel="noopener">
-            <app-icon name="link" [size]="15" />
-            Vedi prodotto
+          <a class="btn btn-outline btn-block" [href]="gift.productUrl" target="_blank" rel="noopener">
+            <app-icon name="link" [size]="16" />
+            VEDI PRODOTTO
           </a>
-        </div>
-      }
-
-      @if (photoUrls.length > 0) {
-        <div class="detail-section detail-photo-section">
-          <div class="photo-scroller">
-            @for (url of photoUrls; track url) {
-              <img [src]="url" [alt]="gift.name" class="detail-photo" />
-            }
-          </div>
         </div>
       }
     </div>
@@ -63,10 +77,12 @@
         @if (gift.receivedByMe) {
           <p class="reception-status">
             <app-icon name="check" [size]="16" />
-            Hai ricevuto questo regalo
-            @if (gift.receivedFromUsername) {
-              (da {{ gift.receivedFromUsername }})
-            }
+            <span>
+              Hai ricevuto questo regalo
+              @if (gift.receivedFromUsername) {
+                (da {{ gift.receivedFromUsername }})
+              }
+            </span>
           </p>
           <button type="button" class="btn btn-ghost btn-block" [disabled]="savingReception" (click)="undoReceived()">
             <app-icon name="x" [size]="15" />
@@ -105,7 +121,7 @@
         @if (gift.receivedByMe) {
           <p class="reception-status">
             <app-icon name="check" [size]="16" />
-            Confermato: hai già regalato questo desiderio
+            <span>Confermato: hai già regalato questo desiderio</span>
           </p>
         } @else if (gift.myClaimPending) {
           <p class="reception-status reception-status-pending">

@@ -64,4 +64,35 @@ public class LocalImageStorageService : IImageStorageService
 
         return $"{_publicBasePath}/{fileName}";
     }
+
+    public void Delete(string imageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl) || !imageUrl.StartsWith(_publicBasePath + "/", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        // Path.GetFileName drops any "../" segments, so only files directly inside the images folder can ever be removed.
+        var fileName = Path.GetFileName(imageUrl);
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return;
+        }
+
+        try
+        {
+            var fullPath = Path.Combine(_imagesPath, fileName);
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+        }
+        catch (IOException)
+        {
+            // Best effort: a photo that can't be removed now is just left on disk.
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
 }

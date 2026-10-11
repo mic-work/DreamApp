@@ -2,6 +2,7 @@ using DreamApp.Api.Common;
 using DreamApp.Api.Data;
 using DreamApp.Api.DTOs.Gifts;
 using DreamApp.Api.Models;
+using DreamApp.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,13 @@ namespace DreamApp.Api.Controllers;
 public class GiftsController : ControllerBase
 {
     private readonly IAppDbContext _db;
+    private readonly IImageStorageService? _images;
 
-    public GiftsController(IAppDbContext db)
+    /// <param name="images">Used to delete photo files that no gift references any more; optional so unit tests can omit it.</param>
+    public GiftsController(IAppDbContext db, IImageStorageService? images = null)
     {
         _db = db;
+        _images = images;
     }
 
     /// <summary>
@@ -181,13 +185,18 @@ public class GiftsController : ControllerBase
         gift.VisibleToAll = dto.VisibleToAll;
         gift.UpdatedAt = DateTime.UtcNow;
 
-        _db.RemoveRange(_db.GiftPhotos.Where(p => p.GiftId == gift.Id).ToList());
+        var previousPhotos = _db.GiftPhotos.Where(p => p.GiftId == gift.Id).ToList();
+        var previousPhotoUrls = previousPhotos.Select(p => p.Url).ToList();
+        _db.RemoveRange(previousPhotos);
         _db.RemoveRange(_db.GiftVisibilities.Where(v => v.GiftId == gift.Id).ToList());
 
         SavePhotos(gift.Id, dto.ImageUrls);
         SaveVisibility(gift.Id, userId, dto.VisibleToAll, dto.VisibleToUserIds);
 
         await _db.SaveChangesAsync();
+
+        // Photos the owner removed while editing no longer belong to any gift: free the disk space.
+        DeleteOrphanedPhotos(previousPhotoUrls);
 
         return Ok(GiftDtoFactory.Build(_db, gift, isOwner: true, callerId: userId, ownerId: userId));
     }
@@ -208,8 +217,18 @@ public class GiftsController : ControllerBase
             return Forbid();
         }
 
+        var photos = _db.GiftPhotos.Where(p => p.GiftId == gift.Id).ToList();
+        var photoUrls = photos.Select(p => p.Url).ToList();
+        if (!string.IsNullOrWhiteSpace(gift.ImageUrl))
+        {
+            photoUrls.Add(gift.ImageUrl);
+        }
+
+        _db.RemoveRange(photos);
         _db.Remove(gift);
         await _db.SaveChangesAsync();
+
+        DeleteOrphanedPhotos(photoUrls);
 
         return NoContent();
     }
@@ -308,6 +327,24 @@ public class GiftsController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(GiftDtoFactory.Build(_db, gift, isOwner, callerId: userId, ownerId: wishlist.OwnerId));
+    }
+
+    /// <summary>Deletes the files of the given photo URLs, unless some gift still uses them. Call it AFTER the database changes are saved.</summary>
+    private void DeleteOrphanedPhotos(IEnumerable<string> candidateUrls)
+    {
+        if (_images is null)
+        {
+            return;
+        }
+
+        foreach (var url in candidateUrls.Where(u => !string.IsNullOrWhiteSpace(u)).Distinct())
+        {
+            var stillUsed = _db.GiftPhotos.Any(p => p.Url == url) || _db.Gifts.Any(g => g.ImageUrl == url);
+            if (!stillUsed)
+            {
+                _images.Delete(url);
+            }
+        }
     }
 
     private bool CanRead(Wishlist wishlist, Guid userId) =>

@@ -11,6 +11,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { PriorityBadgeComponent } from '../../shared/components/priority-badge/priority-badge.component';
+import { fireConfetti } from '../../shared/confetti.util';
 
 /**
  * Full detail of a single gift — name, photo gallery, description, notes,
@@ -147,6 +148,7 @@ export class GiftDetailComponent implements OnInit {
         this.gift = gift;
         this.editingReception = false;
         this.savingReception = false;
+        fireConfetti();
       },
       error: (error) => {
         this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile salvare.');
@@ -170,6 +172,7 @@ export class GiftDetailComponent implements OnInit {
       next: (gift) => {
         this.gift = gift;
         this.savingReception = false;
+        fireConfetti();
       },
       error: (error) => {
         this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile salvare.');

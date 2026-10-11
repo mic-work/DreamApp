@@ -2,14 +2,22 @@
   <app-page-header [title]="wishlist ? 'Lista di ' + wishlist.ownerUsername : 'Lista desideri'" backTo="/home" />
 
   @if (loading) {
-    <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+    <div class="skeleton-list">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
   } @else if (errorMessage) {
     <div class="alert alert-error">{{ errorMessage }}</div>
   } @else if (wishlist) {
     @if (wishlist.gifts.length === 0) {
-      <p class="empty-state">{{ wishlist.ownerUsername }} non ha ancora aggiunto desideri.</p>
+      <app-empty-state
+        icon="gift"
+        [title]="wishlist.ownerUsername + ' non ha ancora desideri'"
+        text="Quando ne aggiungerà qualcuno lo vedrai qui."
+      />
     } @else {
-      <div class="tab-bar" role="tablist">
+      <div class="tab-bar" [class.second]="activeTab === 'given'" role="tablist">
         <button
           type="button"
           role="tab"
@@ -34,7 +42,12 @@
 
       @if (activeTab === 'pending') {
         @if (pendingGifts.length === 0) {
-          <p class="empty-state small">Hai già segnato come regalati tutti i desideri visibili.</p>
+          <app-empty-state
+            icon="check"
+            title="Missione compiuta"
+            text="Hai già segnato come regalati tutti i desideri visibili."
+            [compact]="true"
+          />
         } @else {
           <div class="card-list">
             @for (gift of pendingGifts; track gift.id) {
@@ -44,7 +57,12 @@
         }
       } @else {
         @if (givenGifts.length === 0) {
-          <p class="empty-state small">Non hai ancora segnato nessun regalo come già dato.</p>
+          <app-empty-state
+            icon="gift"
+            title="Nessun regalo fatto, per ora"
+            text="Quando regali qualcosa, segnalo e lo ritroverai qui."
+            [compact]="true"
+          />
         } @else {
           <div class="card-list">
             @for (gift of givenGifts; track gift.id) {

@@ -8,6 +8,7 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { GiftPriority } from '../../models/gift.model';
 import { UserSummary } from '../../models/user.model';
 import { getApiErrorMessage } from '../../shared/api-error.util';
+import { normalizeProductUrl, optionalWebUrl } from '../../shared/validators';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
@@ -28,9 +29,9 @@ export class AddGiftComponent implements OnInit {
 
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
-    description: [''],
-    notes: [''],
-    productUrl: [''],
+    description: ['', [Validators.maxLength(500)]],
+    notes: ['', [Validators.maxLength(1000)]],
+    productUrl: ['', [Validators.maxLength(2048), optionalWebUrl]],
     priority: ['Medium' as GiftPriority, Validators.required]
   });
 
@@ -115,18 +116,23 @@ export class AddGiftComponent implements OnInit {
 
     let remaining = files.length;
     files.forEach((file) => {
-      this.imageService.upload(file).subscribe({
-        next: (result) => this.photos.push(result.imageUrl),
-        error: (error) => {
-          this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile caricare una foto.');
-        },
-        complete: () => {
-          remaining -= 1;
-          if (remaining === 0) {
-            this.uploadingPhoto = false;
+      this.imageService
+        .upload(file)
+        // finalize runs on success AND on error: without it a failed upload would keep SALVA disabled forever.
+        .pipe(
+          finalize(() => {
+            remaining -= 1;
+            if (remaining === 0) {
+              this.uploadingPhoto = false;
+            }
+          })
+        )
+        .subscribe({
+          next: (result) => this.photos.push(result.imageUrl),
+          error: (error) => {
+            this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile caricare una foto.');
           }
-        }
-      });
+        });
     });
 
     input.value = '';
@@ -219,7 +225,7 @@ export class AddGiftComponent implements OnInit {
       name,
       description,
       notes,
-      productUrl,
+      productUrl: normalizeProductUrl(productUrl),
       priority,
       imageUrls: this.photos,
       visibleToAll: this.shareWithAll,

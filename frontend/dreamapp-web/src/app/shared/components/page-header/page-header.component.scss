@@ -1,36 +1,49 @@
 .page-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
 
+/* A round button edged with the same iridescent line as the cards. */
 .back-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border: 2px solid transparent;
   border-radius: 50%;
-  border: none;
-  background: var(--color-surface);
+  background-image: linear-gradient(#fff, #fff), var(--holo-gradient);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   color: var(--color-text);
   box-shadow: var(--shadow-soft);
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.back-btn:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  transition:
+    transform var(--press-duration) var(--ease-out),
+    box-shadow var(--ui-duration) var(--ease-out),
+    color var(--ui-duration) ease;
 }
 
 .back-btn:active {
-  transform: scale(0.92);
+  transform: scale(0.93);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .back-btn:hover {
+    color: var(--color-primary-dark);
+    box-shadow: var(--shadow-lift);
+  }
 }
 
 .page-header .page-title {
   margin: 0;
   flex: 1;
+  min-width: 0;
+  font-size: 1.55rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

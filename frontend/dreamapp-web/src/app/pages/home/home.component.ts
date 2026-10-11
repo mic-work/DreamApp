@@ -2,15 +2,27 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { WishlistService } from '../../core/services/wishlist.service';
+import { getApiErrorMessage } from '../../shared/api-error.util';
 import { WishlistSummary } from '../../models/wishlist.model';
 import { AddFriendDialogComponent } from '../../shared/components/add-friend-dialog/add-friend-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+
+/** Aurora gradients for the friends' avatars: each friend always gets the same one. */
+const AVATAR_GRADIENTS = [
+  'linear-gradient(135deg, #7fa8ee, #b79cf0)',
+  'linear-gradient(135deg, #f58aa8, #f6a95e)',
+  'linear-gradient(135deg, #5cc7a1, #7fa8ee)',
+  'linear-gradient(135deg, #f2a65a, #e2607d)',
+  'linear-gradient(135deg, #9b82e6, #ee8fb3)',
+  'linear-gradient(135deg, #4fbfb3, #7fd6a4)'
+];
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, IconComponent, ConfirmDialogComponent, AddFriendDialogComponent],
+  imports: [RouterLink, IconComponent, ConfirmDialogComponent, AddFriendDialogComponent, EmptyStateComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -29,6 +41,8 @@ export class HomeComponent implements OnInit {
   friendUsernames: string[] = [];
   openMenuId: string | null = null;
   friendPendingRemoval: WishlistSummary | null = null;
+  /** Shown above the friends list when removing a friend fails. */
+  errorMessage: string | null = null;
 
   constructor(
     readonly authService: AuthService,
@@ -58,6 +72,15 @@ export class HomeComponent implements OnInit {
       },
       error: () => (this.loading = false)
     });
+  }
+
+  /** Stable per-friend avatar colour, derived from the username. */
+  avatarGradient(username: string): string {
+    let hash = 0;
+    for (const char of username) {
+      hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    }
+    return AVATAR_GRADIENTS[hash % AVATAR_GRADIENTS.length];
   }
 
   openAddFriend(): void {
@@ -101,14 +124,16 @@ export class HomeComponent implements OnInit {
     }
 
     const id = this.friendPendingRemoval.id;
+    this.errorMessage = null;
     this.wishlistService.revokeAccessToSelf(id).subscribe({
       next: () => {
         this.friendsWishlists = this.friendsWishlists.filter((w) => w.id !== id);
         this.friendUsernames = this.friendsWishlists.map((w) => w.ownerUsername);
         this.friendPendingRemoval = null;
       },
-      error: () => {
+      error: (error) => {
         this.friendPendingRemoval = null;
+        this.errorMessage = getApiErrorMessage(error, 'Non è stato possibile rimuovere questo amico. Riprova.');
       }
     });
   }

@@ -124,6 +124,9 @@ altro file cambia.
 - JWT firmato con chiave simmetrica **non committata**: va configurata
   con `dotnet user-secrets` in sviluppo o con la variabile d'ambiente
   `Jwt__Key` in produzione (vedi README).
+- Limite ai tentativi su `POST /api/auth/login` e `/register`: per IP, al
+  minuto (`RateLimiting:AuthPermitLimit`, default 20); oltre risponde `429`
+  con `{ "message": ... }`.
 - CORS ristretto alle origini configurate (`Cors:AllowedOrigins`), con
   fallback a `http://localhost:4200` solo in sviluppo.
 - Validazione sia lato frontend (Reactive Forms + Validators) sia lato

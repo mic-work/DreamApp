@@ -1,48 +1,46 @@
-<div class="page auth-page holo-page">
-  <div class="holo-content">
-    <div class="holo-login-card">
-      <span class="hero-badge"><app-icon name="gift" [size]="40" /></span>
+<div class="auth-shell">
+  <div class="auth-card">
+    <span class="auth-badge"><app-icon name="gift" [size]="40" /></span>
 
-      <h1 class="holo-login-title">DreamApp</h1>
+    <h1 class="auth-title">DreamApp</h1>
 
-      @if (sessionExpired) {
-        <div class="alert alert-error">La sessione è scaduta. Effettua di nuovo l'accesso.</div>
-      }
-      @if (errorMessage) {
-        <div class="alert alert-error">{{ errorMessage }}</div>
-      }
+    @if (sessionExpired) {
+      <div class="alert alert-error">La sessione è scaduta. Effettua di nuovo l'accesso.</div>
+    }
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
 
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <div class="field">
-          <label for="username">Username</label>
-          <input id="username" type="text" formControlName="username" autocomplete="username" placeholder="Il tuo username" />
-        </div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" type="text" formControlName="username" autocomplete="username" placeholder="Il tuo username" />
+      </div>
 
-        <div class="field">
-          <label for="password">Password</label>
-          <input id="password" type="password" formControlName="password" autocomplete="current-password" placeholder="La tua password" />
-        </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" autocomplete="current-password" placeholder="La tua password" />
+      </div>
 
-        <button type="button" class="forgot-link" (click)="forgotPasswordOpen = true">Password dimenticata?</button>
+      <button type="button" class="forgot-link" (click)="forgotPasswordOpen = true">Password dimenticata?</button>
 
-        <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
-          @if (loading) {
-            <span class="spinner"></span>
-          } @else {
-            ACCEDI
-          }
-        </button>
-      </form>
-    </div>
-
-    <p class="auth-footer">
-      Non hai un account?
-      <a routerLink="/register">REGISTRATI</a>
-    </p>
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner"></span>
+        } @else {
+          ACCEDI
+        }
+      </button>
+    </form>
   </div>
+
+  <p class="auth-footer">
+    Non hai un account?
+    <a routerLink="/register">REGISTRATI</a>
+  </p>
 </div>
 
-<!-- Outside the page wrapper on purpose: the page keeps a transform (enter
+<!-- Outside the page wrapper on purpose: the card keeps a transform (enter
      animation), which would make this fixed popup relative to it, not the screen. -->
 <app-info-dialog
   [open]="forgotPasswordOpen"

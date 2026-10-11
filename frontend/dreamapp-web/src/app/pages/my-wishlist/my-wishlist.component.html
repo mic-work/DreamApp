@@ -7,11 +7,19 @@
     }
 
     @if (loading) {
-      <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+      <div class="skeleton-list">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
     } @else if (gifts.length === 0) {
-      <p class="empty-state">Non hai ancora aggiunto nessun desiderio. Inizia subito! ✨</p>
+      <app-empty-state
+        icon="gift"
+        title="La tua lista è vuota"
+        text="Aggiungi il primo desiderio e fai sapere ai tuoi amici cosa ti renderebbe felice."
+      />
     } @else {
-      <div class="tab-bar" role="tablist">
+      <div class="tab-bar" [class.second]="activeTab === 'received'" role="tablist">
         <button
           type="button"
           role="tab"
@@ -36,21 +44,31 @@
 
       @if (activeTab === 'pending') {
         @if (pendingGifts.length === 0) {
-          <p class="empty-state small">Hai già segnato come ricevuti tutti i tuoi desideri.</p>
+          <app-empty-state
+            icon="check"
+            title="Tutto ricevuto!"
+            text="Hai già segnato come ricevuti tutti i tuoi desideri."
+            [compact]="true"
+          />
         } @else {
           <div class="card-list">
             @for (gift of pendingGifts; track gift.id) {
-              <app-gift-card [gift]="gift" variant="holo" />
+              <app-gift-card [gift]="gift" />
             }
           </div>
         }
       } @else {
         @if (receivedGifts.length === 0) {
-          <p class="empty-state small">Non hai ancora segnato nessun desiderio come ricevuto.</p>
+          <app-empty-state
+            icon="gift"
+            title="Ancora niente qui"
+            text="Quando ricevi un regalo, segnalo e comparirà in questa scheda."
+            [compact]="true"
+          />
         } @else {
           <div class="card-list">
             @for (gift of receivedGifts; track gift.id) {
-              <app-gift-card [gift]="gift" variant="holo" />
+              <app-gift-card [gift]="gift" />
             }
           </div>
         }
