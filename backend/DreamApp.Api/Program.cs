@@ -5,6 +5,7 @@ using DreamApp.Api.Common;
 using DreamApp.Api.Data;
 using DreamApp.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -157,7 +158,17 @@ builder.Services.AddRateLimiter(options =>
             }));
 });
 
+// Behind the Caddy reverse proxy (same host, so it connects from loopback, which is
+// trusted by default) the real client IP and scheme arrive in X-Forwarded-* headers.
+// Needed so the rate limiter sees each visitor's IP instead of 127.0.0.1.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // Fail fast at startup if the signing key is missing (checked on the final configuration).
 if (string.IsNullOrWhiteSpace(app.Configuration["Jwt:Key"]))

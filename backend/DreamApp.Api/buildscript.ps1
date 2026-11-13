@@ -217,6 +217,12 @@ Rilancia .\buildscript.ps1, poi:
      sudo systemctl start dreamapp
 
 Database e foto restano in /var/lib/dreamapp (non vengono toccati dagli aggiornamenti).
+
+BACKUP (fallo prima di ogni aggiornamento e ogni tanto)
+-----------------------------------------------------
+Dal tuo PC, nella cartella backend\DreamApp.Api:
+     .\backup.ps1 -Server IP_DELLA_VM -Key CHIAVE.key
+Scarica database e foto nella cartella DreamAppBackups (nella tua cartella utente).
 Il file /etc/dreamapp.env resta com'e: non va ricaricato.
 "@
 Write-LinuxFile (Join-Path $deployDir 'LEGGIMI.txt') $readme

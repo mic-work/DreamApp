@@ -1,9 +1,8 @@
 // Production environment, swapped in by the "production" build configuration
 // (see angular.json -> fileReplacements) and used by the GitHub Actions
-// deploy workflow. Replace REPLACE_WITH_YOUR_BACKEND_URL with the real,
-// HTTPS URL of your deployed ASP.NET Core backend before deploying — this
-// repository intentionally never hardcodes a real backend address.
+// deploy workflow. apiUrl is the public HTTPS address of the deployed ASP.NET Core
+// backend (Oracle Cloud VM behind Caddy, DuckDNS name; see docs/deploy.md).
 export const environment = {
   production: true,
-  apiUrl: 'https://REPLACE_WITH_YOUR_BACKEND_URL/api'
+  apiUrl: 'https://dreamapp.duckdns.org/api'
 };
